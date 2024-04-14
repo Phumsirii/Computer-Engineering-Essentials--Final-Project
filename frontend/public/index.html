@@ -1,12 +1,20 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Drawing Game</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-
-  <body>
-    <script type="module" src="scripts/main.js"></script>
-  </body>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="chrome=1, IE=9">
+        <meta name="viewport" content="initial-scale=1 maximum-scale=1 user-scalable=0 minimal-ui shrink-to-fit=no" />        
+        <script src="https://cdn.jsdelivr.net/npm/phaser@3.15.1/dist/phaser-arcade-physics.min.js"></script>
+        <script src="./scripts/game.js"></script>
+    </head>
+    <body style="margin: 0">
+        <div id="game" style="margin: 0; padding: 0"></div>
+        <script>
+            const game = new Game({
+                "id": "game",
+                "width": window.innerWidth,
+                "height": window.innerHeight
+            });
+            game.createGame();
+        </script>
+    </body>
 </html>
