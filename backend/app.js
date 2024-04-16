@@ -3,11 +3,20 @@ var cors = require("cors");
 var app = express();
 const port = 3000;
 
+var defaultRoute = require("./routes/defaultRoute");
+var userRoute = require("./routes/userRoute");
+var roomRoute = require("./routes/roomRoute");
+var wordRoute = require("./routes/wordRoute");
+
 app.use(cors());
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use("/", defaultRoute);
+app.use("/user", userRoute);
+app.use("/room", roomRoute);
+app.use("/word", wordRoute);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
