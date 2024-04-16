@@ -6,13 +6,14 @@ const router = express.Router();
 
 router.get("/", getRoom);
 
-const connections = [];
-router.ws("/draw", function (ws, req) {
-  connections.push(ws);
-  console.log(connections);
+const connections = {};
+router.ws("/:id/draw", function (ws, req) {
+  const roomId = req.params.id;
+  if (!connections[roomId]) connections[roomId] = [];
+  connections[roomId].push(ws);
+
   ws.on("message", function (msg) {
-    console.log(msg);
-    broadcast(connections, msg);
+    broadcast(connections[roomId], msg);
   });
 });
 
