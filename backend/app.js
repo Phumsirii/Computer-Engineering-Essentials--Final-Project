@@ -3,6 +3,8 @@ var cors = require("cors");
 var app = express();
 const port = 3000;
 
+var expressWs = require("express-ws")(app);
+
 var defaultRoute = require("./routes/defaultRoute");
 var userRoute = require("./routes/userRoute");
 var roomRoute = require("./routes/roomRoute");
