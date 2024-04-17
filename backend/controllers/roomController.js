@@ -1,3 +1,5 @@
+const { broadcast } = require("../utils/sse");
+
 const getRoom = async (req, res) => {
   res.send("Room Controller");
 };
@@ -26,7 +28,7 @@ const subscribeChat = async (req, res) => {
     type: "connect",
     user,
   };
-  res.write(`data: ${JSON.stringify(response)}\n\n`);
+  broadcast(subscribers[roomId], response);
 
   req.on("close", () => {
     res.end();
@@ -37,13 +39,11 @@ const postDraw = async (req, res) => {
   const roomId = req.params.id;
   const { draw } = req.body;
 
-  subscribers[roomId].forEach((subscriber) => {
-    const response = {
-      type: "draw",
-      draw,
-    };
-    subscriber.write(`data: ${JSON.stringify(response)}\n\n`);
-  });
+  const response = {
+    type: "draw",
+    draw,
+  };
+  broadcast(subscribers[roomId], response);
 
   res.status(200).send("Draw posted");
 };

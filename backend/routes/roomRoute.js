@@ -4,7 +4,6 @@ const {
   subscribeChat,
   postDraw,
 } = require("../controllers/roomController");
-const { broadcast } = require("../utils/websocket");
 
 const router = express.Router();
 
