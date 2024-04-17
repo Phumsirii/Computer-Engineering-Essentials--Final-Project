@@ -5,7 +5,7 @@ const getWord = async (req, res) => {
   try {
     const randomWord = await Word.aggregate([{ $sample: { size: 1 } }]);
 
-    res.status(200).json({ success: true, data2: randomWord });
+    res.status(200).json({ success: true, data: randomWord });
   } catch (err) {
     console.log(err);
 
