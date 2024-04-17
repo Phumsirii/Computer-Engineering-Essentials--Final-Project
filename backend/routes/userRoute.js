@@ -3,7 +3,7 @@ const { getUser,getAllUsers,createUser,updateUser,deleteUser } = require("../con
 
 const router = express.Router();
 
-router.route("/").get(protect,getAllUsers).post(protect,createUser);
-router.route("/:id").get(protect,getUser).put(protect,updateUser).delete(protect,deleteUser);
+router.route("/").get(getAllUsers).post(createUser);
+router.route("/:id").get(getUser).put(updateUser).delete(deleteUser);
 
 module.exports = router;
