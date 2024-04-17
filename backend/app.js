@@ -2,6 +2,7 @@ var express = require("express");
 var cors = require("cors");
 var app = express();
 const port = 3000;
+const connectDB=require("./config/db");
 
 var defaultRoute = require("./routes/defaultRoute");
 var userRoute = require("./routes/userRoute");
@@ -9,6 +10,7 @@ var roomRoute = require("./routes/roomRoute");
 var wordRoute = require("./routes/wordRoute");
 
 app.use(cors());
+connectDB();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
