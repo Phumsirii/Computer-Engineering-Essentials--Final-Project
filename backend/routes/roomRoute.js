@@ -1,20 +1,14 @@
 const express = require("express");
-const { getRoom } = require("../controllers/roomController");
-const { broadcast } = require("../utils/websocket");
+const {
+  getRoom,
+  subscribeChat,
+  postDraw,
+} = require("../controllers/roomController");
 
 const router = express.Router();
 
 router.get("/", getRoom);
-
-const connections = {};
-router.ws("/:id/draw", function (ws, req) {
-  const roomId = req.params.id;
-  if (!connections[roomId]) connections[roomId] = [];
-  connections[roomId].push(ws);
-
-  ws.on("message", function (msg) {
-    broadcast(connections[roomId], msg);
-  });
-});
+router.get("/:id/subscribe", subscribeChat);
+router.post("/:id/draw", postDraw);
 
 module.exports = router;
