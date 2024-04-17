@@ -1,7 +1,9 @@
 var express = require("express");
 var cors = require("cors");
 var app = express();
+require('dotenv').config({ path: "./config/config.env" });
 const port = 3000;
+const connectDB=require("./config/db");
 
 var expressWs = require("express-ws")(app);
 
@@ -11,6 +13,7 @@ var roomRoute = require("./routes/roomRoute");
 var wordRoute = require("./routes/wordRoute");
 
 app.use(cors());
+connectDB();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
