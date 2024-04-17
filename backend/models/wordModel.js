@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const wordSchema = new mongoose.Schema({
   word: {
@@ -7,6 +7,4 @@ const wordSchema = new mongoose.Schema({
   },
 });
 
-const Word = mongoose.model("Word", wordSchema);
-
-export default Word;
+module.exports = mongoose.model("Word", wordSchema);
