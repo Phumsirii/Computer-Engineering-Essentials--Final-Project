@@ -3,6 +3,7 @@ const getRoom = async (req, res) => {
 };
 
 const subscribers = {};
+
 const subscribeChat = async (req, res) => {
   const user = req.headers["user"];
   const roomId = req.params.id;
@@ -20,11 +21,31 @@ const subscribeChat = async (req, res) => {
   };
 
   res.writeHead(200, headers);
-  res.write(`data: ${user} connected\n\n`);
+
+  const response = {
+    type: "connect",
+    user,
+  };
+  res.write(`data: ${JSON.stringify(response)}\n\n`);
 
   req.on("close", () => {
     res.end();
   });
 };
 
-module.exports = { getRoom, subscribeChat };
+const postDraw = async (req, res) => {
+  const roomId = req.params.id;
+  const { draw } = req.body;
+
+  subscribers[roomId].forEach((subscriber) => {
+    const response = {
+      type: "draw",
+      draw,
+    };
+    subscriber.write(`data: ${JSON.stringify(response)}\n\n`);
+  });
+
+  res.status(200).send("Draw posted");
+};
+
+module.exports = { getRoom, subscribeChat, postDraw };
