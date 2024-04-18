@@ -38,6 +38,10 @@ files.map((file) => {
   });
 });
 
+app.use(function (req, res, next) {
+  res.sendFile(path.join(__dirname, "app/404/", "index.html"));
+});
+
 const PORT = 3221;
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Frontend Server ready at http://localhost:${PORT}`);
