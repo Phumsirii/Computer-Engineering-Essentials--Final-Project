@@ -1,20 +1,135 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="X-UA-Compatible" content="chrome=1, IE=9">
-        <meta name="viewport" content="initial-scale=1 maximum-scale=1 user-scalable=0 minimal-ui shrink-to-fit=no" />        
-        <script src="https://cdn.jsdelivr.net/npm/phaser@3.15.1/dist/phaser-arcade-physics.min.js"></script>
-        <script src="./scripts/game.js"></script>
-    </head>
-    <body style="margin: 0">
-        <div id="game" style="margin: 0; padding: 0"></div>
-        <script>
-            const game = new Game({
-                "id": "game",
-                "width": window.innerWidth,
-                "height": window.innerHeight
-            });
-            game.createGame();
-        </script>
-    </body>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gatuk</title>
+    <link rel="stylesheet" href="css/gatuk.css" />
+    <link rel="stylesheet" href="css/stylesheets.css" />
+  </head>
+  <body class="bg-gatuk min-h-screen flex flex-col justify-center items-center">
+    <div class="home-container rounded-2xl shadow-lg py-8 px-12 space-y-16">
+      <div class="flex flex-col justify-center items-center">
+        <img src="/assets/gartuk.png" class="h-12" alt="" />
+      </div>
+      <div class="grid grid-cols-3 gap-8">
+        <div
+          class="col-span-2 bg-black/25 rounded-lg text-white space-y-8 p-4 pb-8 shadow-lg"
+        >
+          <div class="space-y-2">
+            <h2 class="gatuk-heading-subtitle text-2xl text-center">
+              Authentication
+            </h2>
+            <div class="flex flex-row justify-center items-center gap-8">
+              <button
+                type="button"
+                id="open-login-form"
+                class="gatuk-button-form rounded-lg px-12 py-1 font-semibold outline-none"
+              >
+                Login
+              </button>
+              <button
+                type="button"
+                id="open-register-form"
+                class="gatuk-button-form rounded-lg px-12 py-1 font-semibold outline-none"
+              >
+                Register
+              </button>
+            </div>
+          </div>
+          <form id="login-form" class="space-y-8" style="display: none">
+            <div class="grid grid-cols-5 gap-8">
+              <div class="col-span-2 flex flex-col justify-center items-center">
+                <img
+                  src="/assets/Ricardo_Milos.jpg"
+                  class="w-40 h-40 object-cover rounded-full border-4 border-white"
+                  alt="profile"
+                />
+              </div>
+              <div
+                class="col-span-3 space-y-4 flex flex-col justify-center items-center"
+              >
+                <div>
+                  <input
+                    type="text"
+                    id="login-username"
+                    placeholder="Username"
+                    class="gatuk-input-form px-4 rounded-lg text-lg outline-none"
+                  />
+                </div>
+                <div>
+                  <input
+                    type="password"
+                    id="login-password"
+                    placeholder="Password"
+                    class="gatuk-input-form px-4 rounded-lg text-lg outline-none"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="flex flex-col items-center justify-center">
+              <button
+                type="submit"
+                class="gatuk-button-form rounded-lg px-12 py-1 font-semibold text-lg"
+              >
+                Login
+              </button>
+            </div>
+          </form>
+          <form id="register-form" class="space-y-8" style="display: none">
+            <div class="grid grid-cols-5 gap-8">
+              <div
+                class="col-span-3 space-y-4 flex flex-col justify-center items-center"
+              >
+                <div>
+                  <input
+                    type="text"
+                    id="register-username"
+                    placeholder="Username"
+                    class="gatuk-input-form px-4 rounded-lg text-lg outline-none"
+                  />
+                </div>
+                <div>
+                  <input
+                    type="password"
+                    id="register-password"
+                    placeholder="Password"
+                    class="gatuk-input-form px-4 rounded-lg text-lg outline-none"
+                  />
+                </div>
+              </div>
+              <div class="col-span-2 flex flex-col justify-center items-center">
+                <img
+                  src="/assets/Ricardo_Christmas.jpeg"
+                  class="w-40 h-40 object-cover rounded-full border-4 border-white"
+                  alt="profile"
+                />
+              </div>
+            </div>
+            <div class="flex flex-col items-center justify-center">
+              <button
+                type="submit"
+                class="gatuk-button-form rounded-lg px-12 py-1 font-semibold text-lg"
+              >
+                Register
+              </button>
+            </div>
+          </form>
+        </div>
+        <div
+          class="rounded-lg text-white space-y-8 p-4 pb-8 gatuk-border-how-to-play shadow-lg"
+        >
+          <h2 class="gatuk-heading-subtitle text-2xl text-center">
+            How To Play
+          </h2>
+          <div class="flex flex-col items-center justify-center gap-4">
+            <img src="assets/drawing-svgrepo-com.svg" class="w-32" alt="" />
+            <div>Draw the word you see !</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="./scripts/pages/home.js" type="module"></script>
+  </body>
 </html>
