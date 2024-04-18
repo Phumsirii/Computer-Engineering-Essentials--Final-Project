@@ -1,12 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Mitr:wght@200;400;600&display=swap");
 
-body {
-  font-family: "Mitr", sans-serif;
-  background-color: #0000ff;
-  background-image: "https://gartic.io/static/images/new/textura.png";
-  background-repeat: repeat;
-  background-size: cover;
-}
 #background {
   background-image: "https://gartic.io/static/images/new/textura.png";
   background-repeat: repeat;
