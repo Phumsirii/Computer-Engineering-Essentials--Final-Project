@@ -9,7 +9,7 @@ exports.getAllUsers = async (req, res, next) => {
 
     res
       .status(200)
-      .json({ succes: true, count: users.length, data: users });
+      .json({ success: true, count: users.length, data: users });
   } catch (err) {
     console.log(err);
     res.status(400).json({ success: false, msg: "Can't find users" });

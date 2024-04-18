@@ -2,9 +2,10 @@ const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema({
   //user compose of these fields
-  name: {
+  username: {
     type: String,
     required: [true, "Please add a name"],
+    unique:true
   },
   password: {
     type: String,
