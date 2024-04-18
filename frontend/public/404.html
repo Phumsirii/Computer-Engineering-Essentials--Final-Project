@@ -4,17 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gatuk</title>
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/gatuk.css" />
+    <link rel="stylesheet" href="css/stylesheets.css" />
+    <!-- <link rel="stylesheet" href="style.css" /> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
+    <script src="./scripts/game.js"></script>
   </head>
-  <body>
-    <div id="background"></div>
-    <div id="game-title">
-      <h1>Gatuk.ingo</h1>
-    </div>
-    <div id="screen">
-      <div style="text-align: center">
-        <h1>404 Not Found</h1>
-        <p>Oh no! It looks like the page you're trying to get to is missing!</p>
+
+  <body class="bg-gatuk min-h-screen flex flex-col justify-center items-center">
+    <div class="home-container rounded-2xl shadow-lg py-8 px-12 space-y-16">
+      <img src="./assets/gartuk.png" alt="logo" />
+      <div class="text-center text-white">
+        <h1>404 Not Found!</h1>
+        <p>Look like what're you looking for is not here</p>
       </div>
     </div>
   </body>
