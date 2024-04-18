@@ -16,3 +16,9 @@ handleOpenRegisterForm();
 // Handle form submissions
 handleLoginFormSubmit();
 handleRegisterFormSubmit();
+
+// Check if auth
+const userId = localStorage.getItem("userId");
+if (userId) {
+  window.location.href = "/rooms";
+}
