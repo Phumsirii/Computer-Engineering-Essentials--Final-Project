@@ -22,6 +22,10 @@
   background-color: rgba(0, 0, 0, 0.25);
 }
 
+.bg-white\/25 {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
 .gatuk-heading-subtitle {
   color: #5cffb6;
   text-shadow: rgb(23, 5, 87) 3px 0px 0px,
