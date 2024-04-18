@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gatuk</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
+    <script src="./scripts/game.js"></script>
+    
+</head>
+<body>
+    <div id="background"></div>
+    <div id="game-title">
+        <h1>
+            Gatuk.ingo
+        </h1>
+    </div>
+    <!-- <div id="test">
+        <a href="/index.html">Login</a>
+        <a href="/game.html">game</a>
+        <a href="/rooms.html">rooms</a>
+    </div> -->
+    <div id="screen">
+        <div id="game-screen">
+            <div class="events">
+                <div id="interaction">
+                    <div id="users-tool">
+                        <div id="users">
+                            <div class="avatar">
+                                <img src="https://scontent.fbkk5-4.fna.fbcdn.net/v/t1.6435-9/80329905_1026836387689855_3109263542973366272_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=5f2048&_nc_eui2=AeFkOxSfKd2C5wwamphNFHATeUsuwRC577N5Sy7BELnvs3HL6_apw8yNMXuSAocdt8ADAJqWtG8b8Os1SsRBybKw&_nc_ohc=NmWViO2qYuYAb4Jfl9i&_nc_ht=scontent.fbkk5-4.fna&oh=00_AfD_jMvnA4TlwQ3fMrX6zrrZFpCVFPhlwrTnJr1OaS-nAQ&oe=6646F4F2" alt="profile">
+                            </div>
+                            <div class="name">
+                                <span>Empty.</span>
+                            </div>
+                            <div class="score">
+                                <span>0</span>
+                            </div>
+                        </div>
+                        <div id="users">
+                            <div class="avatar">
+                                <img src="https://scontent.fbkk5-4.fna.fbcdn.net/v/t1.6435-9/80329905_1026836387689855_3109263542973366272_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=5f2048&_nc_eui2=AeFkOxSfKd2C5wwamphNFHATeUsuwRC577N5Sy7BELnvs3HL6_apw8yNMXuSAocdt8ADAJqWtG8b8Os1SsRBybKw&_nc_ohc=NmWViO2qYuYAb4Jfl9i&_nc_ht=scontent.fbkk5-4.fna&oh=00_AfD_jMvnA4TlwQ3fMrX6zrrZFpCVFPhlwrTnJr1OaS-nAQ&oe=6646F4F2" alt="profile">
+                            </div>
+                            <div class="name">
+                                <span>Empty.</span>
+                            </div>
+                            <div class="score">
+                                <span>0</span>
+                            </div>
+                        </div>
+                        <div id="users">
+                            <div class="avatar">
+                                <img src="https://scontent.fbkk5-4.fna.fbcdn.net/v/t1.6435-9/80329905_1026836387689855_3109263542973366272_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=5f2048&_nc_eui2=AeFkOxSfKd2C5wwamphNFHATeUsuwRC577N5Sy7BELnvs3HL6_apw8yNMXuSAocdt8ADAJqWtG8b8Os1SsRBybKw&_nc_ohc=NmWViO2qYuYAb4Jfl9i&_nc_ht=scontent.fbkk5-4.fna&oh=00_AfD_jMvnA4TlwQ3fMrX6zrrZFpCVFPhlwrTnJr1OaS-nAQ&oe=6646F4F2" alt="profile">
+                            </div>
+                            <div class="name">
+                                <span>Empty.</span>
+                            </div>
+                            <div class="score">
+                                <span>0</span>
+                            </div>
+                        </div>
+                        <div id="users">
+                            <div class="avatar">
+                                <img src="https://scontent.fbkk5-4.fna.fbcdn.net/v/t1.6435-9/80329905_1026836387689855_3109263542973366272_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=5f2048&_nc_eui2=AeFkOxSfKd2C5wwamphNFHATeUsuwRC577N5Sy7BELnvs3HL6_apw8yNMXuSAocdt8ADAJqWtG8b8Os1SsRBybKw&_nc_ohc=NmWViO2qYuYAb4Jfl9i&_nc_ht=scontent.fbkk5-4.fna&oh=00_AfD_jMvnA4TlwQ3fMrX6zrrZFpCVFPhlwrTnJr1OaS-nAQ&oe=6646F4F2" alt="profile">
+                            </div>
+                            <div class="name">
+                                <span>Empty.</span>
+                            </div>
+                            <div class="score">
+                                <span>0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="answer">
+                        <p>Your Answer :</p>
+                        <input type="text" placeholder="Example">
+                    </div>
+                </div>
+                <div id="game"></div>
+            </div> 
+        </div>
+        
+        <script>
+            const game = new Game({
+                "id": "game",
+                "width": 700,
+                "height": 400
+            });
+            game.createGame();
+        </script>
+    </div>
+</body>
+
+</html>
