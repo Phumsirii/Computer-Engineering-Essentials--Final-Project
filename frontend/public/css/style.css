@@ -1,0 +1,152 @@
+@import url("https://fonts.googleapis.com/css2?family=Mitr:wght@200;400;600&display=swap");
+
+#background {
+  background-image: "https://gartic.io/static/images/new/textura.png";
+  background-repeat: repeat;
+  background-size: cover;
+}
+#game-title {
+  font-size: xx-large;
+  color: yellow;
+  margin-bottom: 16px;
+  text-align: center;
+}
+#screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 5%;
+}
+
+.events {
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+}
+#game {
+  padding: 8px;
+  margin-left: 16px;
+  background-color: white;
+  border-radius: 16px;
+}
+#interaction {
+  display: inline-block;
+  margin-right: 16px;
+}
+#users-tool {
+  padding: 8px;
+  background-color: white;
+  border-radius: 16px;
+  margin-right: 8px;
+  width: 100%;
+  overflow: hidden;
+}
+#users {
+  background-color: gainsboro;
+  padding: 16px;
+  margin: 8px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#users .avatar {
+  border-radius: 100%;
+  width: 40%;
+  height: 40%;
+}
+#answer {
+  width: 100%;
+  padding: 8px;
+  border-radius: 16px;
+  margin-right: 8px;
+  margin-top: 16px;
+  background-color: white;
+  align-items: center;
+}
+
+/* login */
+#login-screen {
+  padding: 16px;
+  width: 50%;
+  background-color: white;
+  border-radius: 16px;
+  overflow: hidden;
+}
+#login-screen input {
+  width: 80%;
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+}
+#login-screen button {
+  width: 40%;
+  padding: 8px;
+  margin-top: 8px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  background-color: yellow;
+  color: black;
+}
+
+#login-form {
+  text-align: center;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.avatar img {
+  border-radius: 100%;
+  width: 50%;
+  height: 50%;
+}
+/* room */
+#room-screen {
+  padding: 16px;
+  background-color: white;
+  border-radius: 16px;
+  margin-top: 16px;
+  width: 50%;
+}
+.room {
+  display: flex;
+  padding: 2%;
+  border-radius: 12px;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: aquamarine;
+}
+.room-join {
+  width: 30%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.room-button {
+  width: 50%;
+  background-color: yellow;
+  padding: 8px;
+  border: none;
+  cursor: pointer;
+  border-radius: 12px;
+}
+.createroom-button {
+  width: 50%;
+  margin: 10px;
+  background-color: yellow;
+  padding: 8px;
+  border: none;
+  cursor: pointer;
+  border-radius: 12px;
+}
+
+/* test */
+#test {
+  padding: 16px;
+  background-color: white;
+  border-radius: 16px;
+  margin-top: 16px;
+  width: 50%;
+}

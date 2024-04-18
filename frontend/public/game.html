@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gatuk</title>
+  <link rel="stylesheet" href="css/gatuk.css" />
+  <link rel="stylesheet" href="css/stylesheets.css" />
+  <!-- <link rel="stylesheet" href="style.css" /> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
+  <script src="./scripts/game.js"></script>
+</head>
+
+<body class="bg-gatuk min-h-screen flex flex-col justify-center items-center">
+  <div class="home-container rounded-2xl shadow-lg py-8 px-12 space-y-16">
+    <div class="flex flex-col justify-center items-center">
+      <img src="/assets/gartuk.png" class="h-12" alt="" />
+    </div>
+    <button class="gatuk-button-form rounded-lg px-12 py-1 font-semibold text-lg" onclick="">
+      exit
+    </button>
+    <div class="grid grid-cols-3 gap-8">
+      <div class="items-center col-span-2 bg-white rounded-lg text-white space-y-8 p-4 pb-8 shadow-lg">
+        <div id="game" class="text-center flex justify-center"></div>
+      </div>
+      <div class="rounded-lg text-white space-y-8 p-4 pb-8 gatuk-border-how-to-play shadow-lg">
+        <h2 class="gatuk-heading-subtitle text-2xl text-center">Users</h2>
+        <div class="user-container">
+          <!-- Sample-user -->
+          <div class="flex flex-row items-center justify-between bg-white/25 rounded-2xl p-2">
+            <!-- <div class="relative bg-white opacity-50 rounded-2xl z-1"></div> -->
+            <img src="/assets/Ricardo_Milos.jpg" class="w-20 h-20 object-cover rounded-full border-4 border-gatuk"
+              alt="profile" />
+            <div class="user-info text-white items-end">
+              <h3 class="text-lg">Ricardo Milos</h3>
+              <p class="text-base">0</p>
+            </div>
+          </div>
+          <!-- Sample user -->
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const game = new Game({
+        id: "game" /*sample id*/,
+        width: window.innerWidth*0.45,
+        height: window.innerHeight*0.45,
+      });
+      game.createGame();
+    </script>
+</body>
+
+</html>
