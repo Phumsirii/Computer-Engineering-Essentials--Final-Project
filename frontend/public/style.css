@@ -2,148 +2,158 @@
 
 body {
   font-family: "Mitr", sans-serif;
+  background-color: #0000ff;
+  background-image: "https://gartic.io/static/images/new/textura.png";
+  background-repeat: repeat;
+  background-size: cover;
 }
-
-#app-name {
-  font-size: 2em;
-  font-weight: bold;
-  margin: 0;
+#background {
+  background-image: "https://gartic.io/static/images/new/textura.png";
+  background-repeat: repeat;
+  background-size: cover;
+}
+#game-title {
+  font-size: xx-large;
+  color: yellow;
+  margin-bottom: 16px;
   text-align: center;
 }
-
-section {
-  margin: 20px 0;
-}
-
-.section-title {
-  font-size: 1.2em;
-  font-weight: lighter;
-  margin: 0;
-}
-
-.section-subtitle {
-  font-size: 0.8em;
-  font-weight: lighter;
-  line-height: 80%;
-}
-
-#member-list {
-  margin: 0;
-  font-size: 0.8em;
-}
-
-#member-list div {
+#screen {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  margin: 4px 0px;
-  column-gap: 4px;
+  margin: 5%;
 }
 
-#main-table {
-  padding: 0;
-  width: 100%;
-  background: #eee;
-  border-radius: 8px;
-  box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.1);
-  border-collapse: collapse;
+.events {
+  display: flex;
+  flex-direction: row;
   overflow: hidden;
 }
-
-#main-table > thead {
-  background: #555;
-  color: white;
+#game {
+  padding: 8px;
+  margin-left: 16px;
+  background-color: white;
+  border-radius: 16px;
+}
+#interaction {
+  display: inline-block;
+  margin-right: 16px;
+}
+#users-tool {
+  padding: 8px;
+  background-color: white;
+  border-radius: 16px;
+  margin-right: 8px;
+  width: 100%;
+  overflow: hidden;
+}
+#users {
+  background-color: gainsboro;
+  padding: 16px;
+  margin:  8px;
+  border-radius: 8px ;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#users .avatar {
+  border-radius: 100%;
+  width: 40%;
+  height: 40%;
+}
+#answer {
+  width: 100%;
+  padding: 8px;
+  border-radius: 16px;
+  margin-right: 8px;
+  margin-top: 16px;
+  background-color: white;
+  align-items: center;
 }
 
-#main-table > thead > tr > th {
-  font-weight: lighter;
-  text-align: left;
+/* login */
+#login-screen {
+  padding: 16px;
+  width: 50%;
+  background-color: white;
+  border-radius: 16px;
+  overflow: hidden;
 }
-
-#main-table td,
-#main-table th {
-  padding: 5px 10px;
-  font-weight: lighter;
-}
-
-#main-table input,
-#main-table select,
-#filter-name,
-#lower-price,
-#upper-price,
-#member-name-to-add {
-  padding: 5px 10px;
+#login-screen input {
+  width: 80%;
+  padding: 8px;
+  margin-bottom: 8px;
   border-radius: 8px;
-  border: 1px solid #aaa;
 }
-
-
-#main-table button,
-#add-member,
-#member-list button {
+#login-screen button {
+  width: 40%;
+  padding: 8px;
+  margin-top: 8px;
+  margin-bottom: 16px;
   border-radius: 8px;
-  padding: 5px 10px;
-  border: 1px solid #aaa;
-  background: white;
-  width: 60px;
-  cursor: pointer;
-}
-
-#main-table button:hover,
-#add-member:hover,
-#member-list button:hover {
-  background: rgb(255, 200, 105);
-  color: white;
-}
-
-#filter-button {
+  background-color: yellow;
   color: black;
-  border-radius: 8px;
-  padding: 5px 10px;
-  border: 1px solid #aaa;
-  background: white;
-  width: 60px;
+}
+
+#login-form {
+text-align: center;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.avatar img {
+  border-radius: 100%;
+  width: 50%;
+  height: 50%;
+}
+/* room */
+#room-screen {
+  padding: 16px;
+  background-color: white;
+  border-radius: 16px;
+  margin-top: 16px;
+  width: 50%;
+}
+.room {
+  display: flex;
+  padding: 2%;
+  border-radius: 12px;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: aquamarine;
+}
+.room-join {
+  width: 30%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.room-button {
+  width: 50%;
+  background-color: yellow;
+  padding: 8px;
+  border: none;
   cursor: pointer;
+  border-radius: 12px;
+}
+.createroom-button {
+  width: 50%;
+  margin: 10px;
+  background-color: yellow;
+  padding: 8px;
+  border: none;
+  cursor: pointer;
+  border-radius: 12px;
 }
 
-#filter-button:hover {
-  color: white;
-  animation: filtering 10s infinite linear;
-}
-
-@keyframes filtering {
-  0% {
-    background: #ff0000;
-  }
-
-  12.5% {
-    background: #ffa500;
-  }
-
-  25% {
-    background: #ffff00;
-  }
-
-  37.5% {
-    background: #008000;
-  }
-
-  50% {
-    background: #0000ff;
-  }
-
-  62.5% {
-    background: #4b0082;
-  }
-
-  75% {
-    background: purple;
-  }
-
-  87.5% {
-    background: #ee82ee;
-  }
-
-  100% {
-    background: #ff0000;
-  }
+/* test */
+#test {
+  padding: 16px;
+  background-color: white;
+  border-radius: 16px;
+  margin-top: 16px;
+  width: 50%;
 }

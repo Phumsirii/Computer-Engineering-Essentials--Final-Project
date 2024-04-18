@@ -6,6 +6,7 @@ class Game {
             parent: config.id ? config.id : "game",
             width: config.width ? config.width : 800,
             height: config.height ? config.height : 600,
+            backgroundColor: "FFFFFF",
             scene: {
                 key: "default",
                 init: this.initScene,
@@ -21,7 +22,7 @@ class Game {
     }
     async createScene() {
         this.graphics = this.add.graphics();
-        this.graphics.lineStyle(4, 0x00aa00);
+        this.graphics.lineStyle(4, 0x000000);
     }
     async updateScene() {
         if(!this.input.activePointer.isDown && this.isDrawing) {
@@ -35,6 +36,7 @@ class Game {
             }
             this.path.draw(this.graphics);
         }
+        console.log(this.path);
     }
 
     async authenticate() { }
