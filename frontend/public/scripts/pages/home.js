@@ -7,6 +7,7 @@ import {
   handleLoginFormSubmit,
   handleRegisterFormSubmit,
 } from "../eventListeners/handleAuthSubmit.js";
+import { getProfile } from "../api/authentication.js";
 
 // Open login form by default
 openLoginForm();
@@ -18,7 +19,7 @@ handleLoginFormSubmit();
 handleRegisterFormSubmit();
 
 // Check if auth
-const userId = localStorage.getItem("userId");
-if (userId) {
+const user = await getProfile();
+if (user) {
   window.location.href = "/rooms";
 }
