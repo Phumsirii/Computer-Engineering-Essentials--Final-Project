@@ -21,8 +21,8 @@ const walkSync = (dir, filelist = []) => {
 
 const files = walkSync(path.join(__dirname, "app"));
 files.map((file) => {
-  const route = file
-    .replace(__dirname, "")
+  const relative_route = file.replace(__dirname, "").replace(/\\/g, "/")
+  const route = relative_route
     .replace("/index.html", "")
     .replace("/app", "");
 
