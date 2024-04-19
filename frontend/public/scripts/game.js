@@ -74,6 +74,7 @@ class Game {
           y: this.input.activePointer.position.y,
         });
       }
+      console.log(this.graphics);
       this.path.draw(this.graphics);
     }
   }
@@ -83,12 +84,19 @@ class Game {
     //   x: 0,
     //   y: 0,
     // };
+    // console.log(newDrawing);
     if (newDrawing.type === "start") {
+      //   this.path = new Phaser.Curves.Path(newDrawing.x, newDrawing.y);
+      //   this.isDrawing = true;
+      // console.log("start");
       this.path = new Phaser.Curves.Path(newDrawing.x, newDrawing.y);
-      this.isDrawing = true;
     } else if (newDrawing.type === "continue") {
       this.path.lineTo(newDrawing.x, newDrawing.y);
-      this.path.draw(this.graphics);
+      // console.log(this.game.scene.scenes[0].graphics);
+      this.path.draw(this.game.scene.scenes[0].graphics);
+
+      // console.log(newDrawing.x, newDrawing.y);
+      // console.log(this.graphics);
     }
   }
 
@@ -98,6 +106,25 @@ class Game {
   async createGame(id, authId) {
     const board = document.querySelector("#game");
     this.game = new Phaser.Game(this.phaserConfig);
-    board.appendChild(this.game.canvas);
+    setTimeout(() => {
+      board.appendChild(this.game.canvas);
+    }, 1000);
+
+    if (isDrawer(roomId)) return;
+
+    const sse = new EventSource(
+      `http://localhost:3000/room/${roomId}/subscribe`
+    );
+
+    sse.onmessage = (e) => {
+      const newDrawing = JSON.parse(e.data);
+      if (newDrawing.type === "draw") {
+        this.updateScene(newDrawing.data);
+      }
+    };
+
+    sse.onerror = () => {
+      sse.close();
+    };
   }
 }
