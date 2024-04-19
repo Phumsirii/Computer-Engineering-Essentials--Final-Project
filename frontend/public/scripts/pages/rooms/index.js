@@ -1,6 +1,9 @@
 import { checkAuth } from "../../eventListeners/authGuard.js";
+import { handleLogout } from "../../eventListeners/handleLogout.js";
 
 checkAuth();
+//handle logout clicked
+handleLogout();
 
 // TODO: Fetch rooms from server
 const rooms = [
