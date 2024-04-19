@@ -1,4 +1,5 @@
 const roomId = window.location.pathname.split("/").pop();
+
 const drawing = async (roomId, drawing) => {
   await fetch(`http://localhost:3000/room/${roomId}/draw`, {
     method: "POST",
@@ -10,6 +11,7 @@ const drawing = async (roomId, drawing) => {
 };
 
 const isDrawer = (roomId) => {
+  // TODO: Get Drawer from the server
   const user = localStorage.getItem("user");
   const profile = JSON.parse(user);
 
