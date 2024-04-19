@@ -23,9 +23,9 @@ const subscribeChat = async (req, res) => {
 
   const response = {
     type: "connect",
-    user,
+    data: user,
   };
-  broadcast(subscribers[roomId], response);
+  if (subscribers[roomId]) broadcast(subscribers[roomId], response);
 
   req.on("close", () => {
     res.end();
@@ -34,13 +34,13 @@ const subscribeChat = async (req, res) => {
 
 const postDraw = async (req, res) => {
   const roomId = req.params.id;
-  const { draw } = req.body;
+  const body = req.body;
 
   const response = {
     type: "draw",
-    draw,
+    data: body,
   };
-  broadcast(subscribers[roomId], response);
+  if (subscribers[roomId]) broadcast(subscribers[roomId], response);
 
   res.status(200).send("Draw posted");
 };
