@@ -7,13 +7,14 @@ var crypto = require('crypto');
 exports.register = async (req, res, next) => {
   try {
     const { username, password } = req.body;
+    //Check if the name is already used
     const userdemo = await User.findOne({ username });
     if (userdemo){
       return res.status(400).json({status:"error",data: { message: "This username is already registered." }});
     }
+
     const user = await User.create({
-      username,
-      password,
+      username,password
     });
     res.status(200).json({ status: "success", user: user });
   } catch (err) {
@@ -30,40 +31,20 @@ exports.login = async (req, res, next) => {
     const { username, password } = req.body;
     //validate email or password
     if (!username || !password) {
-      return res
-        .status(400)
-        .json({
-          status: "error",
-          data: { message: "wrong username or password" },
-        });
+      return res.status(400).json({status: "error",data: { message: "wrong username or password" },});
     }
     //check for user
-    const user = await User.findOne({ username }).select("+password");
+    const user = await User.findOne({ username }).select("+password").select("+salt");
     if (!user) {
-      return res
-        .status(400)
-        .json({
-          status: "error",
-          data: { message: "wrong username or password" },
-        });
+      return res.status(400).json({status: "error",data: { message: "wrong username or password" },});
     }
     //check if password matches
-    if (!(user.password === password)) {
-      return res
-        .status(400)
-        .json({
-          status: "error",
-          data: { message: "wrong username or password" },
-        });
+    if (!(user.validPassword(password))) {
+      return res.status(400).json({status: "error",data: { message: "wrong username or password" },});
     }
     res.status(200).json({ status: "success", user: user });
   } catch (err) {
     console.log(err);
-    return res
-      .status(400)
-      .json({
-        status: "error",
-        data: { message: "wrong username or password" },
-      });
+    return res.status(400).json({status: "error",data: { message: "error" },});
   }
 };
