@@ -13,11 +13,12 @@ const roomSchema = new mongoose.Schema({
   },
   rounds: {
     word: String,
+    // required: true,
     order: {
       type: [mongoose.Schema.ObjectId],
       refer: "User",
+      default: [],
     },
-    required: true,
   },
 });
 

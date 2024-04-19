@@ -59,7 +59,18 @@ const getRoom = async (req, res) => {
       return res.status(400).json({ success: false, msg: "Room not found" });
     }
 
-    res.status(200).json({ success: true, data: rooom });
+    res.status(200).json({ success: true, data: room });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ success: false });
+  }
+};
+
+const getRooms = async (req, res) => {
+  try {
+    const rooms = await Room.find();
+
+    res.status(200).json({ success: true, count: rooms.length, data: rooms });
   } catch (err) {
     console.log(err);
     res.status(400).json({ success: false });
@@ -104,6 +115,7 @@ module.exports = {
   postDraw,
   createRoom,
   getRoom,
+  getRooms,
   updateRoom,
   deleteRoom,
 };
