@@ -11,7 +11,7 @@ export const handleLoginFormSubmit = () => {
 
       const res = await signin(username, password);
       if (res.status === "success") {
-        localStorage.setItem("userId", res.user._id);
+        localStorage.setItem("user", JSON.stringify(res.user));
         window.location.href = "/rooms";
       } else {
         alert(res.data.message);
@@ -29,7 +29,7 @@ export const handleRegisterFormSubmit = () => {
 
       const res = await signup(username, password);
       if (res.status === "success") {
-        localStorage.setItem("userId", res.user._id);
+        localStorage.setItem("user", JSON.stringify(res.user));
         window.location.href = "/rooms";
       } else {
         alert(res.data.message);

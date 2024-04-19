@@ -19,3 +19,16 @@ export const signup = async (username, password) => {
   });
   return response.json();
 };
+
+export const signout = async () => {
+  localStorage.removeItem("user");
+};
+
+export const getProfile = async () => {
+  const user = localStorage.getItem("user");
+  if (!user) {
+    return null;
+  }
+
+  return JSON.parse(user);
+};
