@@ -1,3 +1,5 @@
+import { signup, signin } from "../api/authentication.js";
+
 export const handleLoginFormSubmit = () => {
   document
     .querySelector("#login-form")
@@ -6,6 +8,14 @@ export const handleLoginFormSubmit = () => {
       const username = document.querySelector("#login-username").value;
       const password = document.querySelector("#login-password").value;
       console.log(username, password);
+
+      const res = await signin(username, password);
+      if (res.status === "success") {
+        localStorage.setItem("user", JSON.stringify(res.user));
+        window.location.href = "/rooms";
+      } else {
+        alert(res.data.message);
+      }
     });
 };
 
@@ -16,6 +26,13 @@ export const handleRegisterFormSubmit = () => {
       e.preventDefault();
       const username = document.querySelector("#register-username").value;
       const password = document.querySelector("#register-password").value;
-      console.log(username, password);
+
+      const res = await signup(username, password);
+      if (res.status === "success") {
+        localStorage.setItem("user", JSON.stringify(res.user));
+        window.location.href = "/rooms";
+      } else {
+        alert(res.data.message);
+      }
     });
 };
