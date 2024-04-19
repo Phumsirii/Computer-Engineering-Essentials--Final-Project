@@ -9,6 +9,7 @@ var defaultRoute = require("./routes/defaultRoute");
 var userRoute = require("./routes/userRoute");
 var roomRoute = require("./routes/roomRoute");
 var wordRoute = require("./routes/wordRoute");
+var authRoute = require("./routes/authRoute");
 
 app.use(cors());
 connectDB();
@@ -18,6 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/", defaultRoute);
 app.use("/user", userRoute);
+app.use("/auth", authRoute);
 app.use("/room", roomRoute);
 app.use("/word", wordRoute);
 

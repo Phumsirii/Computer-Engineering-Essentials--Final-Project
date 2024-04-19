@@ -5,11 +5,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gatuk</title>
-  <link rel="stylesheet" href="css/gatuk.css" />
-  <link rel="stylesheet" href="css/stylesheets.css" />
+  <link rel="stylesheet" href="/css/gatuk.css" />
+  <link rel="stylesheet" href="/css/stylesheets.css" />
   <!-- <link rel="stylesheet" href="style.css" /> -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
-  <script src="./scripts/game.js"></script>
+  <script src="/scripts/game.js"></script>
 </head>
 
 <body class="bg-gatuk min-h-screen flex flex-col justify-center items-center">
@@ -17,7 +17,7 @@
     <div class="flex flex-col justify-center items-center">
       <img src="/assets/gartuk.png" class="h-12" alt="" />
     </div>
-    <button class="gatuk-button-form rounded-lg px-12 py-1 font-semibold text-lg" onclick="">
+    <button id="quit-room" class="gatuk-button-form rounded-lg px-12 py-1 font-semibold text-lg">
       exit
     </button>
     <div class="grid grid-cols-3 gap-8">
@@ -42,6 +42,7 @@
       </div>
     </div>
 
+    <script type="module" src="/scripts/pages/rooms/[id]/index.js"></script>
     <script>
       const game = new Game({
         id: "game" /*sample id*/,
