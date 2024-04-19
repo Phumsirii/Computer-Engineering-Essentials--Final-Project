@@ -6,6 +6,9 @@ var crypto = require('crypto');
 //@access   Public
 exports.register = async (req, res, next) => {
   try {
+    if (req.body.password.length<6){
+      return res.status(400).json({ status: "error", data: { message: "password must be at least 6 characters long" } });
+    }
     const { username, password } = req.body;
     //Check if the name is already used
     const userdemo = await User.findOne({ username });
