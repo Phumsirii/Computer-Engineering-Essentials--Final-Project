@@ -7,14 +7,16 @@ const roomSchema = new mongoose.Schema({
   },
   playerList: {
     type: [mongoose.Schema.ObjectId],
+    refer: "User",
     required: true,
     default: [],
   },
   rounds: {
-    drawer: mongoose.Schema.ObjectId,
     word: String,
-    frame: WHAT,
-    order: [mongoose.Schema.ObjectId],
+    order: {
+      type: [mongoose.Schema.ObjectId],
+      refer: "User",
+    },
     required: true,
   },
 });
