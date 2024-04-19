@@ -31,23 +31,6 @@ const rooms = [
 ];
 
 rooms.forEach((room) => {
-  console.log(room);
-  //   <div id="room-1">
-  //     <div class="flex flex-row items-center bg-gatuk justify-between rounded-2xl p-4">
-  //       <div class="room-info items-end gatuk-heading-subtitle">
-  //         <h3 class="text-2xl">Room 1</h3>
-  //         <p class="text-xl">
-  //           <span>0</span> / 4
-  //         </p>
-  //       </div>
-  //       <button
-  //         class="gatuk-button-form rounded-lg px-12 py-1 font-semibold text-lg"
-  //         onclick=""
-  //       >
-  //         join
-  //       </button>
-  //     </div>
-  //   </div>;
   const roomContainer = document.createElement("div");
   roomContainer.setAttribute("id", `room-${room.id}`);
 
@@ -97,6 +80,7 @@ rooms.forEach((room) => {
   joinButton.textContent = "join";
   joinButton.onclick = () => {
     console.log(`Joining room ${room.id}`);
+    // TODO: Send a request to the server to join the room
     window.location.href = `/rooms/${room.id}`;
   };
 
