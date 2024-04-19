@@ -22,7 +22,7 @@ export const signup = async (username, password) => {
 
 export const signout = async () => {
   localStorage.removeItem("user");
-  return "success";
+  return true;
 };
 
 export const getProfile = async () => {
