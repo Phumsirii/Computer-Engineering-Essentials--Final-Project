@@ -124,6 +124,27 @@ const joinRoom = async (req, res) => {
       return res.status(400).json({ success: false, msg: "Player is already in the room." });
     }
     room.playerList.push(newplayer);
+    room.save();
+    res.status(200).json({ success: true, data: room.playerList });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ success: false ,msg : "Something went wrong!!"});
+  }
+};
+
+const quitRoom = async (req, res) => {
+  try {
+    const room = await Room.findById(req.params.id);
+    if (!room){
+      return res.status(400).json({ success: false, msg: "Cannot find the room." });
+    }
+    const leavingplayer=req.body.userId;
+    const leavingplayerIndex=room.playerList.indexOf(leavingplayer);
+    if (leavingplayerIndex===-1){
+      return res.status(400).json({ success: false, msg: "Player is not in the room." });
+    }
+    room.playerList.splice(leavingplayerIndex,1);
+    room.save();
     res.status(200).json({ success: true, data: room.playerList });
   } catch (err) {
     console.log(err);
@@ -139,5 +160,6 @@ module.exports = {
   getRooms,
   updateRoom,
   deleteRoom,
-  joinRoom
+  joinRoom,
+  quitRoom
 };
