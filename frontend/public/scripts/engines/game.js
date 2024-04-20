@@ -11,6 +11,7 @@ export const isDrawer = (roomId) => {
 };
 
 export const initializeGame = (roomId) => {
+  const drawLog = [];
   class Game {
     constructor(config = {}) {
       this.phaserConfig = {
@@ -43,6 +44,7 @@ export const initializeGame = (roomId) => {
     async drawScene() {
       if (!this.input.activePointer.isDown && this.isDrawing) {
         this.isDrawing = false;
+        drawing(roomId, drawLog);
       } else if (this.input.activePointer.isDown) {
         if (!this.isDrawing) {
           this.path = new Phaser.Curves.Path(
@@ -50,7 +52,7 @@ export const initializeGame = (roomId) => {
             this.input.activePointer.position.y
           );
 
-          drawing(roomId, {
+          drawLog.push({
             type: "start",
             x: this.input.activePointer.position.x,
             y: this.input.activePointer.position.y,
@@ -63,7 +65,7 @@ export const initializeGame = (roomId) => {
             this.input.activePointer.position.y
           );
 
-          drawing(roomId, {
+          drawLog.push({
             type: "continue",
             x: this.input.activePointer.position.x,
             y: this.input.activePointer.position.y,
@@ -74,12 +76,14 @@ export const initializeGame = (roomId) => {
       }
     }
     async updateScene(newDrawing) {
-      if (newDrawing.type === "start") {
-        this.path = new Phaser.Curves.Path(newDrawing.x, newDrawing.y);
-      } else if (newDrawing.type === "continue") {
-        this.path.lineTo(newDrawing.x, newDrawing.y);
-        this.path.draw(this.game.scene.scenes[0].graphics);
-      }
+      newDrawing.forEach((drawing) => {
+        if (drawing.type === "start") {
+          this.path = new Phaser.Curves.Path(drawing.x, drawing.y);
+        } else if (drawing.type === "continue") {
+          this.path.lineTo(drawing.x, drawing.y);
+          this.path.draw(this.game.scene.scenes[0].graphics);
+        }
+      });
     }
 
     async authenticate() {}
