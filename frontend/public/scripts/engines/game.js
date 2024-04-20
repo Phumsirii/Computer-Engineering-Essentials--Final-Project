@@ -1,4 +1,5 @@
 import { drawing } from "../api/rooms.js";
+import { BACKEND_URL } from "../config.js";
 
 export const isDrawer = (roomId) => {
   // TODO: Get Drawer from the server
@@ -93,9 +94,7 @@ export const initializeGame = (roomId) => {
 
       if (isDrawer(roomId)) return;
 
-      const sse = new EventSource(
-        `http://localhost:3000/room/${roomId}/subscribe`
-      );
+      const sse = new EventSource(`${BACKEND_URL}/room/${roomId}/subscribe`);
 
       sse.onmessage = (e) => {
         const newDrawing = JSON.parse(e.data);

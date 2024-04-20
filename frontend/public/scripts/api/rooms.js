@@ -1,5 +1,7 @@
+import { BACKEND_URL } from "../config.js";
+
 export const drawing = async (roomId, drawing) => {
-  await fetch(`http://localhost:3000/room/${roomId}/draw`, {
+  await fetch(`${BACKEND_URL}/room/${roomId}/draw`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

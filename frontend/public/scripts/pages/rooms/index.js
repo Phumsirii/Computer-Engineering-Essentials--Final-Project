@@ -91,3 +91,5 @@ rooms.forEach((room) => {
   roomContainer.append(roomInfo);
   document.querySelector("#rooms-list").appendChild(roomContainer);
 });
+
+console.log(process.env.API_URL);
