@@ -1,8 +1,5 @@
 const { broadcast } = require("../utils/sse");
-
-const getRoom = async (req, res) => {
-  res.send("Room Controller");
-};
+const Room = require("../models/roomModel");
 
 const subscribers = {};
 
@@ -26,9 +23,9 @@ const subscribeChat = async (req, res) => {
 
   const response = {
     type: "connect",
-    user,
+    data: user,
   };
-  broadcast(subscribers[roomId], response);
+  if (subscribers[roomId]) broadcast(subscribers[roomId], response);
 
   req.on("close", () => {
     res.end();
@@ -37,15 +34,88 @@ const subscribeChat = async (req, res) => {
 
 const postDraw = async (req, res) => {
   const roomId = req.params.id;
-  const { draw } = req.body;
+  const body = req.body;
 
   const response = {
     type: "draw",
-    draw,
+    data: body,
   };
-  broadcast(subscribers[roomId], response);
+  if (subscribers[roomId]) broadcast(subscribers[roomId], response);
 
   res.status(200).send("Draw posted");
 };
 
-module.exports = { getRoom, subscribeChat, postDraw };
+const createRoom = async (req, res) => {
+  const room = await Room.create(req.body);
+
+  res.status(200).json({ success: true, data: room });
+};
+
+const getRoom = async (req, res) => {
+  try {
+    const room = await Room.findById(req.params.id);
+
+    if (!room) {
+      return res.status(400).json({ success: false, msg: "Room not found" });
+    }
+
+    res.status(200).json({ success: true, data: room });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ success: false });
+  }
+};
+
+const getRooms = async (req, res) => {
+  try {
+    const rooms = await Room.find();
+
+    res.status(200).json({ success: true, count: rooms.length, data: rooms });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ success: false });
+  }
+};
+
+const updateRoom = async (req, res) => {
+  try {
+    const room = await Room.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!room) {
+      return res.status(400).json({ success: false, msg: "Room not found" });
+    }
+
+    res.status(200).json({ success: true, data: room });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ success: false });
+  }
+};
+
+const deleteRoom = async (req, res) => {
+  try {
+    const room = await Room.findByIdAndDelete(req.params.id);
+
+    if (!room) {
+      return res.status(400).json({ success: false, msg: "Can't delete room" });
+    }
+
+    res.status(200).json({ success: true, data: {} });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ success: false });
+  }
+};
+
+module.exports = {
+  subscribeChat,
+  postDraw,
+  createRoom,
+  getRoom,
+  getRooms,
+  updateRoom,
+  deleteRoom,
+};
