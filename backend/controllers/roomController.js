@@ -23,9 +23,9 @@ const subscribeChat = async (req, res) => {
 
   const response = {
     type: "connect",
-    user,
+    data: user,
   };
-  broadcast(subscribers[roomId], response);
+  if (subscribers[roomId]) broadcast(subscribers[roomId], response);
 
   req.on("close", () => {
     res.end();
@@ -34,13 +34,13 @@ const subscribeChat = async (req, res) => {
 
 const postDraw = async (req, res) => {
   const roomId = req.params.id;
-  const { draw } = req.body;
+  const body = req.body;
 
   const response = {
     type: "draw",
-    draw,
+    data: body,
   };
-  broadcast(subscribers[roomId], response);
+  if (subscribers[roomId]) broadcast(subscribers[roomId], response);
 
   res.status(200).send("Draw posted");
 };
@@ -110,6 +110,48 @@ const deleteRoom = async (req, res) => {
   }
 };
 
+const joinRoom = async (req, res) => {
+  try {
+    const room = await Room.findById(req.params.id);
+    if (!room){
+      return res.status(400).json({ success: false, msg: "Cannot find the room." });
+    }
+    if (room.playerList.length>=4){
+      return res.status(400).json({ success: false, msg: "This room is already full." });
+    }
+    const newplayer=req.body.userId;
+    if (room.playerList.indexOf(newplayer)!==-1){
+      return res.status(400).json({ success: false, msg: "Player is already in the room." });
+    }
+    room.playerList.push(newplayer);
+    room.save();
+    res.status(200).json({ success: true, data: room.playerList });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ success: false ,msg : "Something went wrong!!"});
+  }
+};
+
+const quitRoom = async (req, res) => {
+  try {
+    const room = await Room.findById(req.params.id);
+    if (!room){
+      return res.status(400).json({ success: false, msg: "Cannot find the room." });
+    }
+    const leavingplayer=req.body.userId;
+    const leavingplayerIndex=room.playerList.indexOf(leavingplayer);
+    if (leavingplayerIndex===-1){
+      return res.status(400).json({ success: false, msg: "Player is not in the room." });
+    }
+    room.playerList.splice(leavingplayerIndex,1);
+    room.save();
+    res.status(200).json({ success: true, data: room.playerList });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ success: false ,msg : "Something went wrong!!"});
+  }
+};
+
 module.exports = {
   subscribeChat,
   postDraw,
@@ -118,4 +160,6 @@ module.exports = {
   getRooms,
   updateRoom,
   deleteRoom,
+  joinRoom,
+  quitRoom
 };

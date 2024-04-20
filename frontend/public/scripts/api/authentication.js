@@ -1,5 +1,7 @@
+import { BACKEND_URL } from "../config.js";
+
 export const signin = async (username, password) => {
-  const response = await fetch("http://localhost:3000/auth/login", {
+  const response = await fetch(`${BACKEND_URL}/auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -10,7 +12,7 @@ export const signin = async (username, password) => {
 };
 
 export const signup = async (username, password) => {
-  const response = await fetch("http://localhost:3000/auth/register", {
+  const response = await fetch(`${BACKEND_URL}/auth/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
