@@ -110,6 +110,27 @@ const deleteRoom = async (req, res) => {
   }
 };
 
+const joinRoom = async (req, res) => {
+  try {
+    const room = await Room.findById(req.params.id);
+    if (!room){
+      return res.status(400).json({ success: false, msg: "Cannot find the room." });
+    }
+    if (room.playerList.length>4){
+      return res.status(400).json({ success: false, msg: "This room is already full." });
+    }
+    const newplayer=req.body.userId;
+    if (room.playerList.indexOf(newplayer)!==-1){
+      return res.status(400).json({ success: false, msg: "Player is already in the room." });
+    }
+    room.playerList.push(newplayer);
+    res.status(200).json({ success: true, data: room.playerList });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ success: false ,msg : "Something went wrong!!"});
+  }
+};
+
 module.exports = {
   subscribeChat,
   postDraw,
@@ -118,4 +139,5 @@ module.exports = {
   getRooms,
   updateRoom,
   deleteRoom,
+  joinRoom
 };
