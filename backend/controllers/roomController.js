@@ -116,7 +116,7 @@ const joinRoom = async (req, res) => {
     if (!room){
       return res.status(400).json({ success: false, msg: "Cannot find the room." });
     }
-    if (room.playerList.length>4){
+    if (room.playerList.length>=4){
       return res.status(400).json({ success: false, msg: "This room is already full." });
     }
     const newplayer=req.body.userId;
