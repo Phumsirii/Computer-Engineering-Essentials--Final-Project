@@ -1,5 +1,5 @@
 import { signout, getProfile } from "../api/authentication.js";
-import { getRooms, joinRoom } from "../api/rooms.js";
+import { getRooms, joinRoom, createRoom } from "../api/rooms.js";
 
 export const handleLogout = () => {
   console.log("logout");
@@ -17,22 +17,51 @@ export const handleLogout = () => {
     });
 };
 
-// export const handleCreateRoom = () => {
-//   document
-//     .querySelector("#create-room-button")
-//     .addEventListener("submit", async (e) => {
-//       e.preventDefault();
-//       console.log("create room");
-//       const newRoomName = document.querySelector("#room-name").value;
-//       const res = await createRoom(newRoomName);
-//       if (res.status === "success") {
-//         localStorage.setItem("room", JSON.stringify(res.user));
-//         window.location.href = `/rooms/${res.data.roomId}`;
-//       } else {
-//         alert(res.data.message);
-//       }
-//     });
-// };
+export const handleOpenModal = async () => {
+  document
+    .querySelector("#create-room-modal-open")
+    .addEventListener("click", () => {
+      console.log("MODAL");
+      document.querySelector("#create-room-modal").classList.remove("hidden");
+      document.querySelector("#create-room-modal").classList.add("block");
+      document.querySelector("#halt").classList.remove("hidden");
+      document.querySelector("#halt").classList.add("block");
+    });
+};
+
+export const handleCloseModal = async () => {
+  document
+    .querySelector("#create-room-modal-close")
+    .addEventListener("click", () => {
+      console.log("MODAL");
+      document.querySelector("#create-room-modal").classList.remove("block");
+      document.querySelector("#create-room-modal").classList.add("hidden");
+      document.querySelector("#halt").classList.remove("block");
+      document.querySelector("#halt").classList.add("hidden");
+    });
+};
+
+export const handleCreateRoom = async () => {
+  document
+    .querySelector("#create-room-button")
+    .addEventListener("click", async (e) => {
+      e.preventDefault();
+      const newRoomName = document.querySelector("#create-room-name").value;
+      const res = await createRoom(newRoomName);
+      console.log(res.data._id);
+      console.log(res.success);
+      if (res.success) {
+        const user = await getProfile();
+        const joined = await joinRoom(res.data._id, user._id);
+        console.log("11");
+        document.querySelector("#create-room-button").classList.add("disabled");
+        console.log("joining...");
+        window.location.href = `/rooms/${res.data._id}`;
+      } else {
+        alert(res.msg);
+      }
+    });
+};
 
 export const handleJoin = () => {
   document.querySelectorAll("#join-button").forEach((button) => {
@@ -101,8 +130,9 @@ export const displayRooms = async () => {
       console.log(`Joining room ${room._id}`);
       // TODO: Send a request to the server to join the room
       const user = await getProfile();
-      await joinRoom(room._id, user._id);
-      window.location.href = `/rooms/${room._id}`;
+      const joined = await joinRoom(room._id, user._id);
+      if (joined.success) window.location.href = `/rooms/${room._id}`;
+      else alert(joined.message);
     };
 
     roomInfo.append(roomInfoDetails, joinButton);

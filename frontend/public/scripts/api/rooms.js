@@ -45,13 +45,13 @@ export const quitRoom = async (roomId, userId) => {
   return response.json();
 };
 
-// export const createRoom = async (roomName) => {
-//   const response = await fetch("http://localhost:3000/room", {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify({ roomName }),
-//   });
-//   return response.json();
-// };
+export const createRoom = async (roomName) => {
+  const response = await fetch("http://localhost:3000/room", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ roomName }),
+  });
+  return response.json();
+};
