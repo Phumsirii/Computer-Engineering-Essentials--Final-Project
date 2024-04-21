@@ -4,7 +4,7 @@ const Room = require("../models/roomModel");
 const subscribers = {};
 
 const subscribeChat = async (req, res) => {
-  const user = req.headers["user"];
+  // const user = req.headers["user"];
   const roomId = req.params.id;
 
   if (!subscribers[roomId]) {
@@ -21,11 +21,11 @@ const subscribeChat = async (req, res) => {
 
   res.writeHead(200, headers);
 
-  const response = {
-    type: "connect",
-    data: user,
-  };
-  if (subscribers[roomId]) broadcast(subscribers[roomId], response);
+  // const response = {
+  //   type: "connect",
+  //   data: user,
+  // };
+  // if (subscribers[roomId]) broadcast(subscribers[roomId], response);
 
   req.on("close", () => {
     res.end();
@@ -111,8 +111,9 @@ const deleteRoom = async (req, res) => {
 };
 
 const joinRoom = async (req, res) => {
+  const roomId = req.params.id;
   try {
-    const room = await Room.findById(req.params.id);
+    const room = await Room.findById(roomId);
     if (!room) {
       return res
         .status(400)
@@ -131,7 +132,7 @@ const joinRoom = async (req, res) => {
         .json({ success: false, msg: "Player is already in the room." });
     }
     room.playerList.push(newplayer);
-    room.save();
+    await room.save();
     res.status(200).json({ success: true, data: room.playerList });
   } catch (err) {
     console.log(err);

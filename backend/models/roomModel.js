@@ -5,12 +5,12 @@ const roomSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  playerList: {
-    type: [mongoose.Schema.ObjectId],
-    refer: "User",
-    required: true,
-    default: [],
-  },
+  playerList: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+    },
+  ],
   rounds: {
     word: String,
     // required: true,
