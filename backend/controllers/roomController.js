@@ -133,7 +133,7 @@ const joinRoom = async (req, res) => {
         .status(400)
         .json({ success: false, msg: "This room is already full." });
     }
-    console.log(req.body);
+    // console.log(req.body);
     const newplayer = req.body.userId;
     if (room.playerList.indexOf(newplayer) !== -1) {
       return res
@@ -161,6 +161,7 @@ const joinRoom = async (req, res) => {
 };
 
 const quitRoom = async (req, res) => {
+  const roomId = req.params.id;
   try {
     const room = await Room.findById(req.params.id);
     if (!room) {
@@ -176,7 +177,18 @@ const quitRoom = async (req, res) => {
         .json({ success: false, msg: "Player is not in the room." });
     }
     room.playerList.splice(leavingplayerIndex, 1);
-    room.save();
+    await room.save();
+
+    const roomInfo = await Room.findById(roomId).populate("playerList");
+    const response = {
+      type: "join",
+      data: roomInfo.playerList,
+    };
+
+    if (subscribers[roomId]) {
+      broadcast(subscribers[roomId], response);
+    }
+
     res
       .status(200)
       .json({ success: true, msg: "Leaving...", data: room.playerList });
