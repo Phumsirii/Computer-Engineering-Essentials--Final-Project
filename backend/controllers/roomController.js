@@ -45,6 +45,15 @@ const postDraw = async (req, res) => {
   res.status(200).send("Draw posted");
 };
 
+const getRoomStatus = async (req, res) => {
+  const roomId = req.params.id;
+  const room = await Room.findById(roomId).populate("playerList");
+  if (!room) {
+    return res.status(400).json({ success: false, msg: "Room not found" });
+  }
+  res.status(200).json({ success: true, data: room });
+};
+
 const createRoom = async (req, res) => {
   const room = await Room.create(req.body);
 
@@ -176,4 +185,5 @@ module.exports = {
   deleteRoom,
   joinRoom,
   quitRoom,
+  getRoomStatus,
 };
