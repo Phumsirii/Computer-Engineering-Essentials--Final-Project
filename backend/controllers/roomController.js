@@ -62,7 +62,7 @@ const getRoomStatus = async (req, res) => {
 const createRoom = async (req, res) => {
   const room = await Room.create(req.body);
 
-  res.status(200).json({ success: true, data: room });
+  res.status(200).json({ success: true, data: room, msg: "Room created" });
 };
 
 const getRoom = async (req, res) => {
