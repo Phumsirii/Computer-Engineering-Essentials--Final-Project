@@ -3,6 +3,29 @@ import { BACKEND_URL } from "../config.js";
 import { displayPlayersInRoom } from "../eventListeners/handleRoom.js";
 import { setWord } from "../pages/rooms/[id]/index.js";
 import { isDrawer } from "../utils/user.js";
+import { roomId } from "../pages/rooms/[id]/index.js";
+
+export let gameState = "waiting";
+
+export const setGameState = (state) => {
+  gameState = state;
+
+  if (gameState === "playing") {
+    document.querySelector("#waiting-container").style.display = "none";
+    if (isDrawer(roomId)) {
+      document.querySelector("#submit-word-form").style.display = "none";
+      document.querySelector("#draw-word-container").style.display = "block";
+      document.querySelector("#draw-word").innerHTML = currentWord;
+    } else {
+      document.querySelector("#submit-word-form").style.display = "block";
+      document.querySelector("#draw-word-container").style.display = "none";
+    }
+  } else if (gameState === "waiting") {
+    document.querySelector("#waiting-container").style.display = "block";
+    document.querySelector("#submit-word-form").style.display = "none";
+    document.querySelector("#draw-word-container").style.display = "none";
+  }
+};
 
 export const initializeGame = (roomId) => {
   const drawLog = [];
@@ -101,6 +124,8 @@ export const initializeGame = (roomId) => {
         } else if (streamData.type === "join") {
           // console.log(streamData.data);
           displayPlayersInRoom(streamData.data);
+        } else if (streamData.type === "status") {
+          setGameState(streamData.data);
         }
       };
 
