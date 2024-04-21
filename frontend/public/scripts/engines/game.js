@@ -1,14 +1,25 @@
 import { drawing } from "../api/rooms.js";
 import { BACKEND_URL } from "../config.js";
+import { displayPlayersInRoom } from "../eventListeners/handleRoom.js";
+import { setWord } from "../pages/rooms/[id]/index.js";
+import { isDrawer, setDrawer } from "../utils/user.js";
+import { roomId } from "../pages/rooms/[id]/index.js";
 
-export const isDrawer = (roomId) => {
-  // TODO: Get Drawer from the server
-  const user = localStorage.getItem("user");
-  const profile = JSON.parse(user);
+export let gameState = "waiting";
 
-  if (profile.username === "boom2") return true;
-  return false;
+export const setGameState = (state) => {
+  gameState = state;
+
+  if (gameState === "playing") {
+    document.querySelector("#waiting-container").style.display = "none";
+  } else if (gameState === "waiting") {
+    document.querySelector("#waiting-container").style.display = "block";
+    document.querySelector("#submit-word-form").style.display = "none";
+    document.querySelector("#draw-word-container").style.display = "none";
+  }
 };
+
+let newDrawing = [];
 
 export const initializeGame = (roomId) => {
   const drawLog = [];
@@ -28,7 +39,7 @@ export const initializeGame = (roomId) => {
           key: "default",
           init: this.initScene,
           create: this.createScene,
-          update: isDrawer(roomId) ? this.drawScene : null,
+          update: this.updateScene,
         },
       };
     }
@@ -41,49 +52,53 @@ export const initializeGame = (roomId) => {
       this.graphics = this.add.graphics();
       this.graphics.lineStyle(4, 0x000000);
     }
-    async drawScene() {
-      if (!this.input.activePointer.isDown && this.isDrawing) {
-        this.isDrawing = false;
-        drawing(roomId, drawLog);
-      } else if (this.input.activePointer.isDown) {
-        if (!this.isDrawing) {
-          this.path = new Phaser.Curves.Path(
-            this.input.activePointer.position.x,
-            this.input.activePointer.position.y
-          );
+    async updateScene() {
+      if (isDrawer(roomId)) {
+        if (!this.input.activePointer.isDown && this.isDrawing) {
+          this.isDrawing = false;
+          drawing(roomId, drawLog);
+        } else if (this.input.activePointer.isDown) {
+          if (!this.isDrawing) {
+            this.path = new Phaser.Curves.Path(
+              this.input.activePointer.position.x,
+              this.input.activePointer.position.y
+            );
 
-          drawLog.push({
-            type: "start",
-            x: this.input.activePointer.position.x,
-            y: this.input.activePointer.position.y,
-          });
+            drawLog.push({
+              type: "start",
+              x: this.input.activePointer.position.x,
+              y: this.input.activePointer.position.y,
+            });
 
-          this.isDrawing = true;
-        } else {
-          this.path.lineTo(
-            this.input.activePointer.position.x,
-            this.input.activePointer.position.y
-          );
+            this.isDrawing = true;
+          } else {
+            this.path.lineTo(
+              this.input.activePointer.position.x,
+              this.input.activePointer.position.y
+            );
 
-          drawLog.push({
-            type: "continue",
-            x: this.input.activePointer.position.x,
-            y: this.input.activePointer.position.y,
-          });
+            drawLog.push({
+              type: "continue",
+              x: this.input.activePointer.position.x,
+              y: this.input.activePointer.position.y,
+            });
+          }
+          console.log(this.graphics);
+          this.path.draw(this.graphics);
         }
-        console.log(this.graphics);
-        this.path.draw(this.graphics);
+      } else {
+        if (newDrawing.length > 0) {
+          newDrawing.forEach((drawing) => {
+            if (drawing.type === "start") {
+              this.path = new Phaser.Curves.Path(drawing.x, drawing.y);
+            } else if (drawing.type === "continue") {
+              this.path.lineTo(drawing.x, drawing.y);
+              this.path.draw(this.game.scene.scenes[0].graphics);
+            }
+          });
+          newDrawing = [];
+        }
       }
-    }
-    async updateScene(newDrawing) {
-      newDrawing.forEach((drawing) => {
-        if (drawing.type === "start") {
-          this.path = new Phaser.Curves.Path(drawing.x, drawing.y);
-        } else if (drawing.type === "continue") {
-          this.path.lineTo(drawing.x, drawing.y);
-          this.path.draw(this.game.scene.scenes[0].graphics);
-        }
-      });
     }
 
     async authenticate() {}
@@ -96,14 +111,23 @@ export const initializeGame = (roomId) => {
         board.appendChild(this.game.canvas);
       }, 1000);
 
-      if (isDrawer(roomId)) return;
-
       const sse = new EventSource(`${BACKEND_URL}/room/${roomId}/subscribe`);
 
       sse.onmessage = (e) => {
-        const newDrawing = JSON.parse(e.data);
-        if (newDrawing.type === "draw") {
-          this.updateScene(newDrawing.data);
+        const streamData = JSON.parse(e.data);
+        if (streamData.type === "draw" && !isDrawer(roomId)) {
+          newDrawing = streamData.data;
+        } else if (streamData.type === "word" && !isDrawer(roomId)) {
+          setWord(streamData.data);
+        } else if (streamData.type === "join") {
+          // console.log(streamData.data);
+          displayPlayersInRoom(streamData.data);
+        } else if (streamData.type === "status") {
+          setGameState(streamData.data);
+        } else if (streamData.type === "round") {
+          setDrawer(streamData.data.drawer.username);
+          setWord(streamData.data.word);
+          console.log(streamData.data);
         }
       };
 

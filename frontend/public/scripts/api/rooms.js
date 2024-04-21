@@ -10,7 +10,7 @@ export const drawing = async (roomId, drawing) => {
   });
 };
 export const getRooms = async () => {
-  const response = await fetch("http://localhost:3000/room", {
+  const response = await fetch(`${BACKEND_URL}/room`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -20,7 +20,7 @@ export const getRooms = async () => {
 };
 
 export const joinRoom = async (roomId, userId) => {
-  const response = await fetch(`http://localhost:3000/room/${roomId}/join`, {
+  const response = await fetch(`${BACKEND_URL}/room/${roomId}/join`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -33,7 +33,7 @@ export const joinRoom = async (roomId, userId) => {
 };
 
 export const quitRoom = async (roomId, userId) => {
-  const response = await fetch(`http://localhost:3000/room/${roomId}/quit`, {
+  const response = await fetch(`${BACKEND_URL}/room/${roomId}/quit`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -52,6 +52,16 @@ export const createRoom = async (roomName) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ roomName }),
+  });
+  return response.json();
+};
+
+export const getRoomStatus = async (roomId) => {
+  const response = await fetch(`${BACKEND_URL}/room/${roomId}/status`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
   return response.json();
 };

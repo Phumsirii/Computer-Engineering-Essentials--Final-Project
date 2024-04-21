@@ -8,7 +8,8 @@ const {
   updateRoom,
   deleteRoom,
   joinRoom,
-  quitRoom
+  quitRoom,
+  getRoomStatus,
 } = require("../controllers/roomController");
 
 const router = express.Router();
@@ -17,6 +18,7 @@ const router = express.Router();
 router.post("/", createRoom);
 router.get("/:id/subscribe", subscribeChat);
 router.post("/:id/draw", postDraw);
+router.get("/:id/status", getRoomStatus);
 router.get("/", getRooms);
 router.route("/:id").get(getRoom).put(updateRoom).delete(deleteRoom);
 router.route("/:id/join").post(joinRoom);
