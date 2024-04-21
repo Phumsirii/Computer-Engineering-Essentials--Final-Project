@@ -1,4 +1,4 @@
-import { signout } from "../api/authentication.js";
+import { signout, getProfile } from "../api/authentication.js";
 import { getRooms, joinRoom } from "../api/rooms.js";
 
 export const handleLogout = () => {
@@ -41,72 +41,74 @@ export const handleJoin = () => {
       console.log("joining room");
       const roomId = e.target.getAttribute("_id");
       console.log(`Joining room ${roomId}`);
-})
-  })};
+    });
+  });
+};
 
 export const displayRooms = async () => {
-      const rooms = await getRooms();
-      rooms.data.forEach((room) => {
-        // console.log(room);
-        const roomContainer = document.createElement("div");
-        roomContainer.setAttribute("id", `room-${room._id}`);
-      
-        const roomInfo = document.createElement("div");
-        roomInfo.classList.add(
-          "flex",
-          "flex-row",
-          "items-center",
-          "bg-gatuk",
-          "justify-between",
-          "rounded-2xl",
-          "p-4"
-        );
-      
-        const roomInfoDetails = document.createElement("div");
-        roomInfoDetails.classList.add(
-          "room-info",
-          "items-end",
-          "gatuk-heading-subtitle"
-        );
-      
-        const roomName = document.createElement("h3");
-        roomName.classList.add("text-2xl");
-        roomName.textContent = room.roomName;
-      
-        const roomPlayers = document.createElement("p");
-        roomPlayers.classList.add("text-xl");
-      
-        const playersCount = document.createElement("span");
-        playersCount.textContent = room.playerList.length;
-      
-        const playersMax = document.createElement("span");
-        playersMax.textContent = 4
-      
-        roomPlayers.append(playersCount, " / ", playersMax);
-        roomInfoDetails.append(roomName, roomPlayers);
-      
-        const joinButton = document.createElement("button");
-        joinButton.id = "join-button";
-        joinButton.classList.add(
-          "gatuk-button-form",
-          "rounded-lg",
-          "px-12",
-          "py-1",
-          "font-semibold",
-          "text-lg"
-        );
-        joinButton.textContent = "join";
-        joinButton.onclick = async () => {
-          console.log(`Joining room ${room._id}`);
-          // TODO: Send a request to the server to join the room
-          await joinRoom(room._id);
-          window.location.href = `/rooms/${room._id}`;
-        };
-      
-        roomInfo.append(roomInfoDetails, joinButton);
-        roomContainer.append(roomInfo);
-        document.querySelector("#rooms-list").appendChild(roomContainer);
-      });
+  const rooms = await getRooms();
+  rooms.data.forEach((room) => {
+    // console.log(room);
+    const roomContainer = document.createElement("div");
+    roomContainer.setAttribute("id", `room-${room._id}`);
+
+    const roomInfo = document.createElement("div");
+    roomInfo.classList.add(
+      "flex",
+      "flex-row",
+      "items-center",
+      "bg-gatuk",
+      "justify-between",
+      "rounded-2xl",
+      "p-4"
+    );
+
+    const roomInfoDetails = document.createElement("div");
+    roomInfoDetails.classList.add(
+      "room-info",
+      "items-end",
+      "gatuk-heading-subtitle"
+    );
+
+    const roomName = document.createElement("h3");
+    roomName.classList.add("text-2xl");
+    roomName.textContent = room.roomName;
+
+    const roomPlayers = document.createElement("p");
+    roomPlayers.classList.add("text-xl");
+
+    const playersCount = document.createElement("span");
+    playersCount.textContent = room.playerList.length;
+
+    const playersMax = document.createElement("span");
+    playersMax.textContent = 4;
+
+    roomPlayers.append(playersCount, " / ", playersMax);
+    roomInfoDetails.append(roomName, roomPlayers);
+
+    const joinButton = document.createElement("button");
+    joinButton.id = "join-button";
+    joinButton.classList.add(
+      "gatuk-button-form",
+      "rounded-lg",
+      "px-12",
+      "py-1",
+      "font-semibold",
+      "text-lg"
+    );
+    joinButton.textContent = "join";
+    joinButton.onclick = async () => {
+      console.log(`Joining room ${room._id}`);
+      // TODO: Send a request to the server to join the room
+      const user = await getProfile();
+      await joinRoom(room._id, user._id);
+      window.location.href = `/rooms/${room._id}`;
+    };
+
+    roomInfo.append(roomInfoDetails, joinButton);
+    roomContainer.append(roomInfo);
+    document.querySelector("#rooms-list").appendChild(roomContainer);
+  });
 };
 
 export const handleRefresh = () => {

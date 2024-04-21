@@ -19,25 +19,31 @@ export const getRooms = async () => {
   return response.json();
 };
 
-export const joinRoom = async (roomId) => {
+export const joinRoom = async (roomId, userId) => {
   const response = await fetch(`http://localhost:3000/room/${roomId}/join`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
+    body: JSON.stringify({
+      userId: userId,
+    }),
   });
   return response.json();
 };
 
-export const quitRoom = async (roomId) => {
+export const quitRoom = async (roomId, userId) => {
   const response = await fetch(`http://localhost:3000/room/${roomId}/quit`, {
-    method: "POST",
+    method: "DELETE",
     headers: {
       "Content-Type": "application/json",
     },
+    body: JSON.stringify({
+      userId: userId,
+    }),
   });
   return response.json();
-}
+};
 
 // export const createRoom = async (roomName) => {
 //   const response = await fetch("http://localhost:3000/room", {
