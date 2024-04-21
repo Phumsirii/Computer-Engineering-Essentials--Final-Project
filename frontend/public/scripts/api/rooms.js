@@ -55,3 +55,13 @@ export const quitRoom = async (roomId, userId) => {
 //   });
 //   return response.json();
 // };
+
+export const getRoomStatus = async (roomId) => {
+  const response = await fetch(`http://localhost:3000/room/${roomId}/status`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.json();
+};

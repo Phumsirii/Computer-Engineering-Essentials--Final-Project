@@ -123,3 +123,49 @@ export const handleRefresh = () => {
       displayRooms();
     });
 };
+
+export const displayPlayersInRoom = (playerList) => {
+  document.querySelector("#users-container").innerHTML = "";
+  playerList.forEach((player) => {
+    const playerContainer = document.createElement("div");
+    playerContainer.classList.add(
+      "flex",
+      "flex-row",
+      "items-center",
+      "gap-8",
+      "bg-white/25",
+      "rounded-2xl",
+      "p-2"
+    );
+
+    const playerImage = document.createElement("img");
+    playerImage.src = "/assets/Ricardo_Milos.jpg";
+    playerImage.classList.add(
+      "w-20",
+      "h-20",
+      "aspect-square",
+      "object-cover",
+      "rounded-full",
+      "border-4",
+      "border-gatuk"
+    );
+    playerImage.alt = "profile";
+
+    const playerInfo = document.createElement("div");
+    playerInfo.classList.add("user-info", "text-white", "items-end");
+
+    const playerName = document.createElement("h3");
+    playerName.classList.add("text-lg");
+    playerName.textContent = player.username;
+
+    const playerScore = document.createElement("p");
+    playerScore.classList.add("text-base");
+    playerScore.textContent = 100;
+
+    playerInfo.append(playerName, playerScore);
+
+    playerContainer.append(playerImage, playerInfo);
+
+    document.querySelector("#users-container").appendChild(playerContainer);
+  });
+};
