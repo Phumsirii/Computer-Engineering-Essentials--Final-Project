@@ -20,19 +20,6 @@ export const handleQuitRoom = () => {
 };
 
 export const handleGetAllUsers = async () => {
-  // <div
-  //             class="flex flex-row items-center justify-between bg-white/25 rounded-2xl p-2"
-  //           >
-  //             <img
-  //               src="/assets/Ricardo_Milos.jpg"
-  //               class="w-20 h-20 object-cover rounded-full border-4 border-gatuk"
-  //               alt="profile"
-  //             />
-  //             <div class="user-info text-white items-end">
-  //               <h3 class="text-lg">Ricardo Milos</h3>
-  //               <p class="text-base">0</p>
-  //             </div>
-  //           </div>
   const users = await getUsers();
   const usersContainer = document.querySelector("#users-container");
   users.data.forEach((user) => {

@@ -142,6 +142,17 @@ const joinRoom = async (req, res) => {
     }
     room.playerList.push(newplayer);
     await room.save();
+
+    const roomInfo = await Room.findById(roomId).populate("playerList");
+    const response = {
+      type: "join",
+      data: roomInfo.playerList,
+    };
+
+    if (subscribers[roomId]) {
+      broadcast(subscribers[roomId], response);
+    }
+
     res.status(200).json({ success: true, data: room.playerList });
   } catch (err) {
     console.log(err);

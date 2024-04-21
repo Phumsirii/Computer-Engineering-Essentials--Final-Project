@@ -1,5 +1,6 @@
 import { drawing } from "../api/rooms.js";
 import { BACKEND_URL } from "../config.js";
+import { displayPlayersInRoom } from "../eventListeners/handleRoom.js";
 import { setWord } from "../pages/rooms/[id]/index.js";
 import { isDrawer } from "../utils/user.js";
 
@@ -89,17 +90,17 @@ export const initializeGame = (roomId) => {
         board.appendChild(this.game.canvas);
       }, 1000);
 
-      if (isDrawer(roomId)) return;
-
       const sse = new EventSource(`${BACKEND_URL}/room/${roomId}/subscribe`);
 
       sse.onmessage = (e) => {
         const streamData = JSON.parse(e.data);
-        if (streamData.type === "draw") {
+        if (streamData.type === "draw" && !isDrawer(roomId)) {
           this.updateScene(streamData.data);
-        } else if (streamData.type === "word") {
-          console.log(streamData.data);
+        } else if (streamData.type === "word" && !isDrawer(roomId)) {
           setWord(streamData.data);
+        } else if (streamData.type === "join") {
+          // console.log(streamData.data);
+          displayPlayersInRoom(streamData.data);
         }
       };
 
