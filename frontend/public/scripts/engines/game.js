@@ -1,14 +1,7 @@
 import { drawing } from "../api/rooms.js";
 import { BACKEND_URL } from "../config.js";
-
-export const isDrawer = (roomId) => {
-  // TODO: Get Drawer from the server
-  const user = localStorage.getItem("user");
-  const profile = JSON.parse(user);
-
-  if (profile.username === "boom2") return true;
-  return false;
-};
+import { setWord } from "../pages/rooms/[id]/index.js";
+import { isDrawer } from "../utils/user.js";
 
 export const initializeGame = (roomId) => {
   const drawLog = [];
@@ -101,9 +94,12 @@ export const initializeGame = (roomId) => {
       const sse = new EventSource(`${BACKEND_URL}/room/${roomId}/subscribe`);
 
       sse.onmessage = (e) => {
-        const newDrawing = JSON.parse(e.data);
-        if (newDrawing.type === "draw") {
-          this.updateScene(newDrawing.data);
+        const streamData = JSON.parse(e.data);
+        if (streamData.type === "draw") {
+          this.updateScene(streamData.data);
+        } else if (streamData.type === "word") {
+          console.log(streamData.data);
+          setWord(streamData.data);
         }
       };
 
