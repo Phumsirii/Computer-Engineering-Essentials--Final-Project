@@ -1,5 +1,6 @@
 const { broadcast } = require("../utils/sse");
 const Room = require("../models/roomModel");
+const Word = require("../models/wordModel");
 
 const subscribers = {};
 
@@ -157,6 +158,7 @@ const joinRoom = async (req, res) => {
       broadcast(subscribers[roomId], response);
     }
 
+    // Start Playing Game
     if (roomInfo.playerList.length === 2) {
       const response = {
         type: "status",
@@ -164,6 +166,30 @@ const joinRoom = async (req, res) => {
       };
       if (subscribers[roomId]) {
         broadcast(subscribers[roomId], response);
+      }
+
+      // Start Game
+      // Push to rounds
+      const randomWord = await Word.aggregate([{ $sample: { size: 1 } }]);
+      // console.log(randomWord);
+      const round = {
+        drawer: roomInfo.playerList[0],
+        word: randomWord[0]._id,
+        guesses: [],
+      };
+      roomInfo.rounds.push(round);
+      await roomInfo.save();
+
+      const response2 = {
+        type: "round",
+        data: {
+          drawer: roomInfo.playerList[0],
+          word: randomWord[0].word,
+        },
+      };
+
+      if (subscribers[roomId]) {
+        broadcast(subscribers[roomId], response2);
       }
     }
 

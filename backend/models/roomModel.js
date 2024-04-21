@@ -11,15 +11,30 @@ const roomSchema = new mongoose.Schema({
       ref: "User",
     },
   ],
-  rounds: {
-    word: String,
-    // required: true,
-    order: {
-      type: [mongoose.Schema.ObjectId],
-      refer: "User",
-      default: [],
+  rounds: [
+    {
+      drawer: {
+        type: mongoose.Schema.ObjectId,
+        ref: "user",
+      },
+      word: {
+        type: mongoose.Schema.ObjectId,
+        ref: "word",
+      },
+      guesses: [
+        {
+          player: {
+            type: mongoose.Schema.ObjectId,
+            ref: "user",
+          },
+          guess: {
+            type: String,
+            required: true,
+          },
+        },
+      ],
     },
-  },
+  ],
 });
 
 module.exports = mongoose.model("Room", roomSchema);

@@ -4,7 +4,7 @@ import {
   handleGetAllUsers,
   handleQuitRoom,
 } from "../../../eventListeners/handleGameRoom.js";
-import { isDrawer } from "../../../utils/user.js";
+import { isDrawer, setDrawer } from "../../../utils/user.js";
 import { getRoomStatus } from "../../../api/rooms.js";
 import { displayPlayersInRoom } from "../../../eventListeners/handleRoom.js";
 
@@ -26,3 +26,5 @@ initializeGame(roomId);
 const res = await getRoomStatus(roomId);
 displayPlayersInRoom(res.data.playerList);
 setGameState(res.status);
+setDrawer(res.data.rounds[0].drawer);
+setWord(res.data.rounds[0].word);
