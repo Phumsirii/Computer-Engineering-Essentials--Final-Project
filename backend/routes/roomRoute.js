@@ -20,6 +20,6 @@ router.post("/:id/draw", postDraw);
 router.get("/", getRooms);
 router.route("/:id").get(getRoom).put(updateRoom).delete(deleteRoom);
 router.route("/:id/join").post(joinRoom);
-router.route("/:id/quit").post(quitRoom);
+router.route("/:id/quit").delete(quitRoom);
 
 module.exports = router;
