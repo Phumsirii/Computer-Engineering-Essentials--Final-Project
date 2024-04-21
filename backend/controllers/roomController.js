@@ -51,7 +51,11 @@ const getRoomStatus = async (req, res) => {
   if (!room) {
     return res.status(400).json({ success: false, msg: "Room not found" });
   }
-  res.status(200).json({ success: true, data: room });
+  res.status(200).json({
+    success: true,
+    data: room,
+    status: room.playerList.length == 2 ? "playing" : "waiting",
+  });
 };
 
 const createRoom = async (req, res) => {
@@ -151,6 +155,16 @@ const joinRoom = async (req, res) => {
 
     if (subscribers[roomId]) {
       broadcast(subscribers[roomId], response);
+    }
+
+    if (roomInfo.playerList.length === 2) {
+      const response = {
+        type: "status",
+        data: "playing",
+      };
+      if (subscribers[roomId]) {
+        broadcast(subscribers[roomId], response);
+      }
     }
 
     res.status(200).json({ success: true, data: room.playerList });
