@@ -4,9 +4,47 @@ const Word = require("../models/wordModel");
 
 const subscribers = {};
 
-const subscribeChat = async (req, res) => {
-  const roomId = req.params.id;
+// Utils
+const startNewRound = async () => {
+  // get random word
+  const word = await Word.aggregate([{ $sample: { size: 1 } }]);
 
+  // Change status to playing
+  roomInfo.status = "playing";
+
+  // Add round
+  roomInfo.rounds.push({
+    drawer: roomInfo.playerList[0].user._id,
+    word: word[0]._id,
+  });
+  await roomInfo.save();
+
+  await roomInfo.populate([
+    {
+      path: "playerList.user",
+      model: "User",
+    },
+    {
+      path: "rounds.drawer",
+      model: "User",
+    },
+    {
+      path: "rounds.word",
+      model: "Word",
+    },
+  ]);
+
+  const response = {
+    type: "status",
+    data: roomInfo,
+  };
+
+  if (subscribers[roomId]) {
+    broadcast(subscribers[roomId], response);
+  }
+};
+
+const sendRoomInfo = async (roomId) => {
   const roomInfo = await Room.findById(roomId).populate([
     {
       path: "playerList.user",
@@ -21,14 +59,28 @@ const subscribeChat = async (req, res) => {
       model: "Word",
     },
   ]);
+
+  const response = {
+    type: "status",
+    data: roomInfo,
+  };
+
+  if (subscribers[roomId]) {
+    broadcast(subscribers[roomId], response);
+  }
+};
+
+const subscribeChat = async (req, res) => {
+  const roomId = req.params.id;
+
+  // Check does room valid
+  const roomInfo = await Room.findById(roomId);
   if (roomInfo == null) {
     return res.status(400).json({ success: false, msg: "Room not found" });
   }
 
-  if (!subscribers[roomId]) {
-    subscribers[roomId] = [];
-  }
-
+  // Store subscriber
+  if (!subscribers[roomId]) subscribers[roomId] = [];
   subscribers[roomId].push(res);
 
   const headers = {
@@ -39,62 +91,10 @@ const subscribeChat = async (req, res) => {
   res.writeHead(200, headers);
 
   // Initialize Room Info
-  if (roomInfo.status == "waiting") {
-    if (roomInfo.playerList.length < 2) {
-      const response = {
-        type: "status",
-        data: roomInfo,
-      };
-
-      if (subscribers[roomId]) {
-        broadcast(subscribers[roomId], response);
-      }
-    } else {
-      const word = await Word.aggregate([{ $sample: { size: 1 } }]);
-
-      // Change status to playing
-      roomInfo.status = "playing";
-
-      // Add round
-      roomInfo.rounds.push({
-        drawer: roomInfo.playerList[0].user._id,
-        word: word[0]._id,
-      });
-      await roomInfo.save();
-
-      await roomInfo.populate([
-        {
-          path: "playerList.user",
-          model: "User",
-        },
-        {
-          path: "rounds.drawer",
-          model: "User",
-        },
-        {
-          path: "rounds.word",
-          model: "Word",
-        },
-      ]);
-
-      const response = {
-        type: "status",
-        data: roomInfo,
-      };
-
-      if (subscribers[roomId]) {
-        broadcast(subscribers[roomId], response);
-      }
-    }
-  } else if (roomInfo.status == "playing") {
-    const response = {
-      type: "status",
-      data: roomInfo,
-    };
-
-    if (subscribers[roomId]) {
-      broadcast(subscribers[roomId], response);
-    }
+  if (roomInfo.status == "waiting" && roomInfo.playerList.length >= 2) {
+    startNewRound();
+  } else {
+    sendRoomInfo(roomId);
   }
 
   req.on("close", () => {
@@ -117,7 +117,7 @@ const postDraw = async (req, res) => {
 
 const guessDraw = async (req, res) => {
   const roomId = req.params.id;
-  const { answer } = req.body;
+  const { answer, userId } = req.body;
 
   const roomInfo = await Room.findById(roomId).populate([
     {
@@ -138,7 +138,53 @@ const guessDraw = async (req, res) => {
     return res.status(400).json({ success: false, msg: "Room not found" });
   }
 
+  // Check if the answer is correct
   const currentRound = roomInfo.rounds[roomInfo.rounds.length - 1];
+  if (currentRound.word.word == answer) {
+    // Update score to Drawer
+    const drawerIndex = roomInfo.playerList.findIndex(
+      (player) => player.user == currentRound.drawer
+    );
+    roomInfo.playerList[drawerIndex].score += 100;
+
+    // Update score to Guesser
+    const guesserIndex = roomInfo.playerList.findIndex(
+      (player) => player.user == userId
+    );
+    roomInfo.playerList[guesserIndex].score += 100;
+
+    // Add to guesses
+    currentRound.guesses.push({ player: userId, guess: answer });
+
+    // Change status to ended
+    currentRound.status = "ended";
+
+    await roomInfo.save();
+
+    await roomInfo.populate([
+      {
+        path: "playerList.user",
+        model: "User",
+      },
+      {
+        path: "rounds.drawer",
+        model: "User",
+      },
+      {
+        path: "rounds.word",
+        model: "Word",
+      },
+    ]);
+
+    const response = {
+      type: "status",
+      data: roomInfo,
+    };
+
+    if (subscribers[roomId]) {
+      broadcast(subscribers[roomId], response);
+    }
+  }
 
   res.status(200).send("Guess posted");
 };
