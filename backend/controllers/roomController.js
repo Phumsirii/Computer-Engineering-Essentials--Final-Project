@@ -78,7 +78,7 @@ const subscribeChat = async (req, res) => {
   res.writeHead(200, headers);
 
   // Initialize Room Info
-  if (roomInfo.status == "waiting" && roomInfo.playerList.length >= 2) {
+  if (roomInfo.status == "waiting" && roomInfo.playerList.length >= 4) {
     startNewRound(roomId);
   } else {
     sendRoomInfo(roomId);
@@ -155,6 +155,8 @@ const guessDraw = async (req, res) => {
       await roomInfo.save();
       startNewRound(roomId);
     }
+  } else {
+    sendRoomInfo(roomId);
   }
 
   res.status(200).send({
