@@ -76,8 +76,12 @@ export const handleJoin = () => {
 
 export const displayRooms = async () => {
   const rooms = await getRooms();
-  rooms.data.forEach((room) => {
-    // console.log(room);
+
+  const sortedRooms = rooms.data.sort((a, b) => {
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
+
+  sortedRooms.forEach((room) => {
     const roomContainer = document.createElement("div");
     roomContainer.setAttribute("id", `room-${room._id}`);
 
