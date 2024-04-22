@@ -5,6 +5,14 @@ const Word = require("../models/wordModel");
 const subscribers = {};
 
 // Utils
+const clearBoard = async (roomId) => {
+  const response = {
+    type: "clear",
+    data: true,
+  };
+  if (subscribers[roomId]) broadcast(subscribers[roomId], response);
+};
+
 const startNewRound = async (roomId) => {
   const roomInfo = await Room.findById(roomId);
   roomInfo.status = "playing";
@@ -17,6 +25,7 @@ const startNewRound = async (roomId) => {
 
   await roomInfo.save();
 
+  clearBoard(roomId);
   sendRoomInfo(roomId);
 };
 
@@ -88,7 +97,10 @@ const postDraw = async (req, res) => {
   };
   if (subscribers[roomId]) broadcast(subscribers[roomId], response);
 
-  res.status(200).send("Draw posted");
+  res.status(200).send({
+    success: true,
+    msg: "Drawing posted",
+  });
 };
 
 const guessDraw = async (req, res) => {
@@ -136,7 +148,10 @@ const guessDraw = async (req, res) => {
     startNewRound(roomId);
   }
 
-  res.status(200).send("Guess posted");
+  res.status(200).send({
+    success: true,
+    msg: "Guess posted",
+  });
 };
 
 const createRoom = async (req, res) => {
