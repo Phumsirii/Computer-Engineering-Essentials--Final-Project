@@ -18,7 +18,11 @@ const startNewRound = async (roomId) => {
   const roomInfo = await Room.findById(roomId);
   roomInfo.status = "playing";
 
-  const word = await Word.aggregate([{ $sample: { size: 1 } }]);
+  const word = await Word.aggregate([
+    { $match: { _id: { $nin: roomInfo.rounds.map((round) => round.word) } } },
+    { $sample: { size: 1 } },
+  ]);
+
   roomInfo.rounds.push({
     drawer:
       roomInfo.playerList[roomInfo.rounds.length % roomInfo.playerList.length]
@@ -149,6 +153,7 @@ const guessDraw = async (req, res) => {
       await roomInfo.save();
       //add points to players wining the game
       //3 points if a player wins alone, 1 point each if there are multiplae winners
+
       let maxscore=0;
       roomInfo.playerList.forEach( async (player)=>{
         //see maxscore
@@ -167,8 +172,9 @@ const guessDraw = async (req, res) => {
         }
       });
       //more than one winners
-      if (winners.length>1){
+      if (winners.length > 1) {
         //for all winners
+
         winners.forEach( async (player)=>{
           const userInfo = await User.findById(player);
           await User.findOneAndUpdate(
@@ -185,7 +191,7 @@ const guessDraw = async (req, res) => {
           { 'roomId': winners[0] },
           { $set: { 'result': "Won" } },
         );
-        userInfo.points+=3;
+        userInfo.points += 3;
         userInfo.save();
       }
       sendRoomInfo(roomId);
