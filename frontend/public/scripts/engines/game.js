@@ -5,6 +5,8 @@ import {
   renderRoomStatus,
   renderWord,
   renderPlayerScoreSummary,
+  renderGuessedWord,
+  renderStartButton,
 } from "../eventListeners/handleRoom.js";
 import { roomId } from "../pages/rooms/[id]/index.js";
 import { getProfile } from "../api/authentication.js";
@@ -24,6 +26,7 @@ export const setDrawer = (drawer) => {
 export const initializeGame = (roomId) => {
   let drawLog = [];
   let newDrawing = [];
+  let currentRound = -1;
 
   const sse = new EventSource(`${BACKEND_URL}/room/${roomId}/subscribe`);
 
@@ -37,8 +40,23 @@ export const initializeGame = (roomId) => {
 
         // Word Management
         const rounds = streamData.data.rounds;
+        const status = streamData.data.status;
+
+        if (status === "waiting") renderStartButton(playerList.length, roomId);
 
         if (rounds.length == 0) return;
+        if (currentRound != rounds.length - 1) {
+          currentRound = rounds.length - 1;
+          if (currentRound != -1 && status !== "gameover") {
+            document.querySelector("#start-newround-modal").style.display =
+              "block";
+            setTimeout(() => {
+              document.querySelector("#start-newround-modal").style.display =
+                "none";
+            }, 1000);
+          }
+        }
+
         const lastRound = rounds[rounds.length - 1];
 
         setDrawer(lastRound.drawer.username === (await getProfile()).username);
@@ -49,9 +67,21 @@ export const initializeGame = (roomId) => {
         }
 
         // Render From Game State
-        const status = streamData.data.status;
         renderRoomStatus(status, isDrawer);
         if (status === "gameover") renderPlayerScoreSummary(playerList);
+
+        // Render guessed words
+        const playerId = (await getProfile())._id;
+        const filteredGuessFromPlayer = lastRound.guesses.filter(
+          (guess) => guess.player === playerId
+        );
+        if (!isDrawer) {
+          if (filteredGuessFromPlayer.length > 0) {
+            renderGuessedWord(true, filteredGuessFromPlayer[0].guess);
+          } else {
+            renderGuessedWord(false, "");
+          }
+        }
 
         break;
       case "draw":

@@ -6,7 +6,6 @@
     <title>Gatuk</title>
     <link rel="stylesheet" href="/css/gatuk.css" />
     <link rel="stylesheet" href="/css/stylesheets.css" />
-    <!-- <link rel="stylesheet" href="style.css" /> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
   </head>
 
@@ -71,22 +70,38 @@
           </div>
         </div>
         <div>
-          <form
-            id="submit-word-form"
-            class="p-4 flex items-center justify-end space-x-8 bg-black/25 rounded-3xl"
+          <div
+            id="guessed-word-container"
+            class="p-4 bg-black/25 rounded-3xl"
+            style="display: none"
           >
+            <div
+              id="guessed-word"
+              class="text-center gatuk-heading-subtitle text-white text-2xl"
+            ></div>
+          </div>
+          <form id="submit-word-form" class="p-4 bg-black/25 rounded-3xl">
             <input
               type="text"
               id="input-word"
-              class="gatuk-input-form p-2 rounded-2xl w-full text-center text-yellow"
+              class="gatuk-input-form p-2 rounded-2xl w-full text-center text-yellow mx-0"
               placeholder="input your guess here!"
             />
           </form>
-          <div
-            id="waiting-container"
-            class="gatuk-heading-subtitle text-4xl text-center"
-          >
-            Waiting...
+          <div id="waiting-container">
+            <div class="flex flex-row gap-4 justify-center items-center">
+              <div class="gatuk-heading-subtitle text-4xl text-center">
+                Waiting...
+              </div>
+              <button
+                id="start-game-button"
+                class="gatuk-button-form px-4 py-1 rounded-lg"
+                style="cursor: not-allowed"
+                disabled
+              >
+                start game
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -96,11 +111,19 @@
     <div
       id="gameover-modal"
       class="fixed top-1/2 left-1/2 bg-black/25 p-8 rounded-2xl"
-      style="transform: translateX(-50%, -50%)"
+      style="transform: translateX(-50%, -50%); display: none"
     >
       <div class="gatuk-heading-subtitle text-4xl">Gameover</div>
       <div id="player-score-summary"></div>
       <button id="quit-gameover">Back to main menu</button>
+    </div>
+
+    <div
+      id="start-newround-modal"
+      class="fixed top-1/2 left-1/2 bg-black/25 py-4 px-8 rounded-2xl shadow-lg"
+      style="transform: translateX(-50%, -50%); display: none"
+    >
+      <div class="gatuk-heading-subtitle text-4xl">Starting New Round...</div>
     </div>
 
     <script type="module" src="/scripts/pages/rooms/[id]/index.js"></script>

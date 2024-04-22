@@ -1,5 +1,5 @@
 import { signout, getProfile } from "../api/authentication.js";
-import { getRooms, joinRoom, createRoom } from "../api/rooms.js";
+import { getRooms, joinRoom, createRoom, startGame } from "../api/rooms.js";
 
 export const handleLogout = () => {
   console.log("logout");
@@ -190,7 +190,7 @@ export const displayPlayersInRoom = (playerList) => {
 
     const playerScore = document.createElement("p");
     playerScore.classList.add("text-base");
-    playerScore.textContent = player.score;
+    playerScore.textContent = player.score.toFixed(2);
 
     playerInfo.append(playerName, playerScore);
 
@@ -206,6 +206,7 @@ export const renderWord = (word) => {
 
 export const renderRoomStatus = (status, isDrawer) => {
   if (status === "waiting") {
+    document.querySelector("#guessed-word-container").style.display = "none";
     document.querySelector("#waiting-container").style.display = "block";
     document.querySelector("#submit-word-form").style.display = "none";
     document.querySelector("#draw-word-container").style.display = "none";
@@ -219,9 +220,11 @@ export const renderRoomStatus = (status, isDrawer) => {
       document.querySelector("#draw-word-container").style.display = "none";
     }
 
+    document.querySelector("#guessed-word-container").style.display = "none";
     document.querySelector("#waiting-container").style.display = "none";
     document.querySelector("#gameover-modal").style.display = "none";
   } else if (status === "gameover") {
+    document.querySelector("#guessed-word-container").style.display = "none";
     document.querySelector("#waiting-container").style.display = "none";
     document.querySelector("#submit-word-form").style.display = "none";
     document.querySelector("#draw-word-container").style.display = "none";
@@ -229,7 +232,34 @@ export const renderRoomStatus = (status, isDrawer) => {
   }
 };
 
+export const renderGuessedWord = (isGuess, word) => {
+  if (isGuess) {
+    document.querySelector("#guessed-word").textContent = word;
+    document.querySelector("#guessed-word-container").style.display = "block";
+    document.querySelector("#submit-word-form").style.display = "none";
+  } else {
+    document.querySelector("#guessed-word-container").style.display = "none";
+    document.querySelector("#submit-word-form").style.display = "block";
+  }
+};
+
 export const renderPlayerScoreSummary = (playerList) => {
   // TODO: Aungpao add the player score summary here at gameover modal
   console.log(playerList);
+};
+
+export const renderStartButton = (playerCount, roomId) => {
+  if (playerCount >= 2) {
+    document.querySelector("#start-game-button").disabled = false;
+    document.querySelector("#start-game-button").style.cursor = "pointer";
+    document
+      .querySelector("#start-game-button")
+      .addEventListener("click", () => {
+        console.log("Starting game");
+        startGame(roomId);
+      });
+  } else {
+    document.querySelector("#start-game-button").disabled = true;
+    document.querySelector("#start-game-button").style.cursor = "not-allowed";
+  }
 };

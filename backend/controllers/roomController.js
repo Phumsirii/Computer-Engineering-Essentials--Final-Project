@@ -58,6 +58,7 @@ const sendRoomInfo = async (roomId) => {
   }
 };
 
+// API
 const subscribeChat = async (req, res) => {
   const roomId = req.params.id;
 
@@ -78,12 +79,7 @@ const subscribeChat = async (req, res) => {
   };
   res.writeHead(200, headers);
 
-  // Initialize Room Info
-  if (roomInfo.status == "waiting" && roomInfo.playerList.length >= 2) {
-    startNewRound(roomId);
-  } else {
-    sendRoomInfo(roomId);
-  }
+  sendRoomInfo(roomId);
 
   req.on("close", () => {
     res.end();
@@ -131,7 +127,8 @@ const guessDraw = async (req, res) => {
     const drawerIndex = roomInfo.playerList.findIndex(
       (player) => player.user.toString() == currentRound.drawer.toString()
     );
-    roomInfo.playerList[drawerIndex].score += 100 / roomInfo.playerList.length;
+    roomInfo.playerList[drawerIndex].score +=
+      100 / (roomInfo.playerList.length - 1);
 
     // Update score to Guesser
     const guesserIndex = roomInfo.playerList.findIndex(
@@ -189,12 +186,40 @@ const guessDraw = async (req, res) => {
       await roomInfo.save();
       startNewRound(roomId);
     }
+  } else {
+    sendRoomInfo(roomId);
   }
 
   res.status(200).send({
     success: true,
     msg: "Guess posted",
   });
+};
+
+const playGame = async (req, res) => {
+  const roomId = req.params.id;
+  const roomInfo = await Room.findById(roomId);
+
+  if (roomInfo == null) {
+    return res.status(400).json({ success: false, msg: "Room not found" });
+  }
+
+  if (roomInfo.status == "playing") {
+    return res
+      .status(400)
+      .json({ success: false, msg: "Game already started" });
+  }
+
+  if (roomInfo.status == "gameover") {
+    return res.status(400).json({ success: false, msg: "Game already over" });
+  }
+
+  if (roomInfo.playerList.length < 2) {
+    return res.status(400).json({ success: false, msg: "Not enough players" });
+  }
+
+  startNewRound(roomId);
+  res.status(200).json({ success: true, msg: "Game started" });
 };
 
 const createRoom = async (req, res) => {
@@ -380,4 +405,5 @@ module.exports = {
   deleteRoom,
   joinRoom,
   quitRoom,
+  playGame,
 };
