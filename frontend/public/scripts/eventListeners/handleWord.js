@@ -9,6 +9,7 @@ export const handleCreateWord = async () => {
       const res = await createWord(newWord);
       if (res.success) console.log(newWord + " sent");
       else alert("Failed to create!");
+      window.location.href = "";
     });
 };
 
