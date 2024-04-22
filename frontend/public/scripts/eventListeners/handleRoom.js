@@ -17,7 +17,7 @@ export const handleLogout = () => {
     });
 };
 
-export const handleOpenModal = async () => {
+export const handleOpenModal = () => {
   document
     .querySelector("#create-room-modal-open")
     .addEventListener("click", () => {
@@ -29,7 +29,7 @@ export const handleOpenModal = async () => {
     });
 };
 
-export const handleCloseModal = async () => {
+export const handleCloseModal = () => {
   document
     .querySelector("#create-room-modal-close")
     .addEventListener("click", () => {

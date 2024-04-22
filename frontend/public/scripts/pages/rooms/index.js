@@ -7,6 +7,11 @@ import {
   handleOpenModal,
   handleCloseModal,
 } from "../../eventListeners/handleRoom.js";
+import {
+  handleCloseWordModal,
+  handleOpenWordModal,
+  handleCreateWord,
+} from "../../eventListeners/handleWord.js";
 import { getRooms } from "../../api/rooms.js";
 
 checkAuth();
@@ -22,6 +27,10 @@ handleOpenModal();
 handleCloseModal();
 handleCreateRoom();
 
-//room handler
+// handle create word
+handleOpenWordModal();
+handleCloseWordModal();
+handleCreateWord();
 
+//room handler
 displayRooms();

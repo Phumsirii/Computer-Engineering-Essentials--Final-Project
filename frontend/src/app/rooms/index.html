@@ -16,9 +16,10 @@
       >
         <div class="flex justify-between">
           <p class="gatuk-heading-subtitle">Create room</p>
-          <button id="create-room-modal-close"
-          class="w-6 h-6 rounded-full bg-red-600 hover:bg-red-200 border-2">
-          </button>
+          <button
+            id="create-room-modal-close"
+            class="w-6 h-6 rounded-full bg-red-600 hover:bg-red-200 border-2"
+          ></button>
         </div>
         <input
           type="text"
@@ -35,6 +36,32 @@
       </div>
     </div>
 
+    <div id="create-word-modal" class="z-50 fixed hidden">
+      <div
+        id="create-word-container"
+        class="grid grid-cols-1 p-8 bg-white shadow rounded-2xl gap-4"
+      >
+        <div class="flex justify-between">
+          <p class="gatuk-heading-subtitle">Create word</p>
+          <button
+            id="create-word-modal-close"
+            class="w-6 h-6 rounded-full bg-red-600 hover:bg-red-200 border-2"
+          ></button>
+        </div>
+        <input
+          type="text"
+          id="create-word-name"
+          class="gatuk-input-form bg-black/25 border-2 border-gray-300 cols-span-1 p-2 rounded-2xl"
+          placeholder="Enter any word"
+        />
+        <button
+          id="create-word-button"
+          class="gatuk-button-form rounded-2xl bg-blue-200 p-2"
+        >
+          Create !
+        </button>
+      </div>
+    </div>
     <div
       id="halt"
       class="fixed w-screen bg-black/25 min-h-screen z-10 top-0 right-0 hidden"
@@ -81,12 +108,20 @@
               >
                 <!-- Rooms List will be appeared here -->
               </div>
-              <button
-                id="create-room-modal-open"
-                class="gatuk-button-form rounded-lg px-12 py-1 font-semibold text-lg"
-              >
-                create room
-              </button>
+              <div class="flex flex-row justify-between">
+                <button
+                  id="create-room-modal-open"
+                  class="gatuk-button-form rounded-lg px-12 py-1 font-semibold text-lg"
+                >
+                  create room
+                </button>
+                <button
+                  id="create-word-modal-open"
+                  class="gatuk-button-form rounded-lg px-12 py-1 font-semibold text-lg"
+                >
+                  create new word
+                </button>
+              </div>
             </div>
           </div>
         </div>
