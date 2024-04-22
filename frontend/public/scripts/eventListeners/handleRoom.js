@@ -247,3 +247,18 @@ export const renderPlayerScoreSummary = (playerList) => {
   // TODO: Aungpao add the player score summary here at gameover modal
   console.log(playerList);
 };
+
+export const renderStartButton = (playerCount) => {
+  if (playerCount >= 2) {
+    document.querySelector("#start-game-button").disabled = false;
+    document.querySelector("#start-game-button").style.cursor = "pointer";
+    document
+      .querySelector("#start-game-button")
+      .addEventListener("click", () => {
+        console.log("Starting game");
+      });
+  } else {
+    document.querySelector("#start-game-button").disabled = true;
+    document.querySelector("#start-game-button").style.cursor = "not-allowed";
+  }
+};

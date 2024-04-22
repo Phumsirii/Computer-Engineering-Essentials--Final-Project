@@ -25,7 +25,6 @@ router.route("/:id/quit").delete(quitRoom);
 router.route("/:id/play").post(playGame);
 
 // normal routes
-router.get("/", getRoom);
 router.post("/", createRoom);
 router.get("/", getRooms);
 router.route("/:id").get(getRoom).put(updateRoom).delete(deleteRoom);

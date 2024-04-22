@@ -6,6 +6,7 @@ import {
   renderWord,
   renderPlayerScoreSummary,
   renderGuessedWord,
+  renderStartButton,
 } from "../eventListeners/handleRoom.js";
 import { roomId } from "../pages/rooms/[id]/index.js";
 import { getProfile } from "../api/authentication.js";
@@ -40,6 +41,8 @@ export const initializeGame = (roomId) => {
         // Word Management
         const rounds = streamData.data.rounds;
         const status = streamData.data.status;
+
+        if (status === "waiting") renderStartButton(playerList.length);
 
         if (rounds.length == 0) return;
         if (currentRound != rounds.length - 1) {
