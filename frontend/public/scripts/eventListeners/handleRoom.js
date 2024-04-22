@@ -1,5 +1,5 @@
 import { signout, getProfile } from "../api/authentication.js";
-import { getRooms, joinRoom, createRoom } from "../api/rooms.js";
+import { getRooms, joinRoom, createRoom, startGame } from "../api/rooms.js";
 
 export const handleLogout = () => {
   console.log("logout");
@@ -248,7 +248,7 @@ export const renderPlayerScoreSummary = (playerList) => {
   console.log(playerList);
 };
 
-export const renderStartButton = (playerCount) => {
+export const renderStartButton = (playerCount, roomId) => {
   if (playerCount >= 2) {
     document.querySelector("#start-game-button").disabled = false;
     document.querySelector("#start-game-button").style.cursor = "pointer";
@@ -256,6 +256,7 @@ export const renderStartButton = (playerCount) => {
       .querySelector("#start-game-button")
       .addEventListener("click", () => {
         console.log("Starting game");
+        startGame(roomId);
       });
   } else {
     document.querySelector("#start-game-button").disabled = true;

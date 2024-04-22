@@ -165,6 +165,10 @@ const playGame = async (req, res) => {
   const roomId = req.params.id;
   const roomInfo = await Room.findById(roomId);
 
+  if (roomInfo == null) {
+    return res.status(400).json({ success: false, msg: "Room not found" });
+  }
+
   if (roomInfo.status == "playing") {
     return res
       .status(400)

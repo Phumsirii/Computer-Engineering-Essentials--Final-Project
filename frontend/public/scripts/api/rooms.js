@@ -69,3 +69,13 @@ export const guessWord = async (roomId, userId, answer) => {
   });
   return response.json();
 };
+
+export const startGame = async (roomId) => {
+  const response = await fetch(`${BACKEND_URL}/room/${roomId}/play`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.json();
+};

@@ -42,7 +42,7 @@ export const initializeGame = (roomId) => {
         const rounds = streamData.data.rounds;
         const status = streamData.data.status;
 
-        if (status === "waiting") renderStartButton(playerList.length);
+        if (status === "waiting") renderStartButton(playerList.length, roomId);
 
         if (rounds.length == 0) return;
         if (currentRound != rounds.length - 1) {
