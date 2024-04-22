@@ -4,6 +4,7 @@ import {
   displayPlayersInRoom,
   renderRoomStatus,
   renderWord,
+  renderPlayerScoreSummary,
 } from "../eventListeners/handleRoom.js";
 import { roomId } from "../pages/rooms/[id]/index.js";
 import { getProfile } from "../api/authentication.js";
@@ -14,7 +15,6 @@ export let isDrawer = false;
 
 export const setRoomInfo = (info) => {
   roomInfo = info;
-  console.log(info);
 };
 
 export const setDrawer = (drawer) => {
@@ -22,7 +22,7 @@ export const setDrawer = (drawer) => {
 };
 
 export const initializeGame = (roomId) => {
-  const drawLog = [];
+  let drawLog = [];
   let newDrawing = [];
 
   const sse = new EventSource(`${BACKEND_URL}/room/${roomId}/subscribe`);
@@ -51,10 +51,15 @@ export const initializeGame = (roomId) => {
         // Render From Game State
         const status = streamData.data.status;
         renderRoomStatus(status, isDrawer);
+        if (status === "gameover") renderPlayerScoreSummary(playerList);
 
         break;
       case "draw":
         newDrawing = streamData.data;
+        break;
+      case "clear":
+        const scene = game.game.scene.scenes[0];
+        scene.graphics.clear();
         break;
       default:
     }
@@ -98,6 +103,7 @@ export const initializeGame = (roomId) => {
         if (!this.input.activePointer.isDown && this.isDrawing) {
           this.isDrawing = false;
           drawing(roomId, drawLog);
+          drawLog = [];
         } else if (this.input.activePointer.isDown) {
           if (!this.isDrawing) {
             this.path = new Phaser.Curves.Path(
@@ -149,28 +155,6 @@ export const initializeGame = (roomId) => {
       // setTimeout(() => {
       //   board.appendChild(this.game.canvas);
       // }, 1000);
-
-      // sse.onmessage = (e) => {
-      //   // const streamData = JSON.parse(e.data);
-      //   // if (streamData.type === "draw" && !isDrawer(roomId)) {
-      //   //   newDrawing = streamData.data;
-      //   // } else if (streamData.type === "word" && !isDrawer(roomId)) {
-      //   //   setWord(streamData.data);
-      //   // } else if (streamData.type === "join") {
-      //   //   // console.log(streamData.data);
-      //   //   displayPlayersInRoom(streamData.data);
-      //   // } else if (streamData.type === "status") {
-      //   //   setGameState(streamData.data);
-      //   // } else if (streamData.type === "round") {
-      //   //   setDrawer(streamData.data.drawer.username);
-      //   //   setWord(streamData.data.word);
-      //   //   console.log(streamData.data);
-      //   // }
-      // };
-
-      // sse.onerror = () => {
-      //   sse.close();
-      // };
     }
   }
 

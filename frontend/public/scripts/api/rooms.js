@@ -56,12 +56,16 @@ export const createRoom = async (roomName) => {
   return response.json();
 };
 
-export const getRoomStatus = async (roomId) => {
-  const response = await fetch(`${BACKEND_URL}/room/${roomId}/status`, {
-    method: "GET",
+export const guessWord = async (roomId, userId, answer) => {
+  const response = await fetch(`${BACKEND_URL}/room/${roomId}/guess`, {
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
+    body: JSON.stringify({
+      userId,
+      answer,
+    }),
   });
   return response.json();
 };

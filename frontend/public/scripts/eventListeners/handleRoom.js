@@ -132,7 +132,7 @@ export const displayRooms = async () => {
       const user = await getProfile();
       const joined = await joinRoom(room._id, user._id);
       if (joined.success) window.location.href = `/rooms/${room._id}`;
-      else alert(joined.message);
+      else alert(joined.msg);
     };
 
     roomInfo.append(roomInfoDetails, joinButton);
@@ -190,7 +190,7 @@ export const displayPlayersInRoom = (playerList) => {
 
     const playerScore = document.createElement("p");
     playerScore.classList.add("text-base");
-    playerScore.textContent = 100;
+    playerScore.textContent = player.score;
 
     playerInfo.append(playerName, playerScore);
 
@@ -209,15 +209,27 @@ export const renderRoomStatus = (status, isDrawer) => {
     document.querySelector("#waiting-container").style.display = "block";
     document.querySelector("#submit-word-form").style.display = "none";
     document.querySelector("#draw-word-container").style.display = "none";
+    document.querySelector("#gameover-modal").style.display = "none";
   } else if (status === "playing") {
     if (isDrawer) {
-      document.querySelector("#waiting-container").style.display = "none";
       document.querySelector("#submit-word-form").style.display = "none";
       document.querySelector("#draw-word-container").style.display = "block";
     } else {
-      document.querySelector("#waiting-container").style.display = "none";
       document.querySelector("#submit-word-form").style.display = "block";
       document.querySelector("#draw-word-container").style.display = "none";
     }
+
+    document.querySelector("#waiting-container").style.display = "none";
+    document.querySelector("#gameover-modal").style.display = "none";
+  } else if (status === "gameover") {
+    document.querySelector("#waiting-container").style.display = "none";
+    document.querySelector("#submit-word-form").style.display = "none";
+    document.querySelector("#draw-word-container").style.display = "none";
+    document.querySelector("#gameover-modal").style.display = "block";
   }
+};
+
+export const renderPlayerScoreSummary = (playerList) => {
+  // TODO: Aungpao add the player score summary here at gameover modal
+  console.log(playerList);
 };
