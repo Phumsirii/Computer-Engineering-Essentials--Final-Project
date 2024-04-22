@@ -17,7 +17,6 @@ const startNewRound = async (roomId) => {
   const roomInfo = await Room.findById(roomId);
   roomInfo.status = "playing";
 
-  console.log(roomInfo.rounds.length % roomInfo.playerList.length);
   const word = await Word.aggregate([{ $sample: { size: 1 } }]);
   roomInfo.rounds.push({
     drawer:
@@ -146,9 +145,16 @@ const guessDraw = async (req, res) => {
   await roomInfo.save();
 
   if (currentRound.guesses.length == roomInfo.playerList.length - 1) {
-    currentRound.status = "ended";
-    await roomInfo.save();
-    startNewRound(roomId);
+    // game will over when roundes.length == playerList.length
+    if (roomInfo.rounds.length == roomInfo.playerList.length) {
+      roomInfo.status = "gameover";
+      await roomInfo.save();
+      sendRoomInfo(roomId);
+    } else {
+      currentRound.status = "ended";
+      await roomInfo.save();
+      startNewRound(roomId);
+    }
   }
 
   res.status(200).send({
@@ -236,9 +242,17 @@ const joinRoom = async (req, res) => {
         .status(400)
         .json({ success: false, msg: "This room is already full." });
     }
-    // console.log(req.body);
+    if (room.status === "playing") {
+      return res
+        .status(400)
+        .json({ success: false, msg: "This room is already playing." });
+    }
+
     const newplayer = req.body.userId;
-    if (room.playerList.indexOf(newplayer) !== -1) {
+    if (
+      room.playerList.filter((player) => player.user.toString() === newplayer)
+        .length > 0
+    ) {
       return res
         .status(400)
         .json({ success: false, msg: "Player is already in the room." });
@@ -264,7 +278,13 @@ const quitRoom = async (req, res) => {
         .json({ success: false, msg: "Cannot find the room." });
     }
     const leavingplayer = req.body.userId;
-    // change to new schema
+
+    if (room.status === "playing") {
+      return res
+        .status(400)
+        .json({ success: false, msg: "Cannot leave while playing." });
+    }
+
     const leavingplayerIndex = room.playerList.findIndex(
       (player) => player.user == leavingplayer
     );

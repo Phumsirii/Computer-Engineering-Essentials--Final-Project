@@ -4,6 +4,7 @@ import {
   displayPlayersInRoom,
   renderRoomStatus,
   renderWord,
+  renderPlayerScoreSummary,
 } from "../eventListeners/handleRoom.js";
 import { roomId } from "../pages/rooms/[id]/index.js";
 import { getProfile } from "../api/authentication.js";
@@ -21,7 +22,7 @@ export const setDrawer = (drawer) => {
 };
 
 export const initializeGame = (roomId) => {
-  const drawLog = [];
+  let drawLog = [];
   let newDrawing = [];
 
   const sse = new EventSource(`${BACKEND_URL}/room/${roomId}/subscribe`);
@@ -50,6 +51,8 @@ export const initializeGame = (roomId) => {
         // Render From Game State
         const status = streamData.data.status;
         renderRoomStatus(status, isDrawer);
+        if (status === "gameover") renderPlayerScoreSummary(playerList);
+
         break;
       case "draw":
         newDrawing = streamData.data;
