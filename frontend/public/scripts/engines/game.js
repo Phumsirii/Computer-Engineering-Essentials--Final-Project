@@ -29,7 +29,6 @@ export const initializeGame = (roomId) => {
 
   sse.onmessage = async (e) => {
     const streamData = JSON.parse(e.data);
-    console.log(streamData.data);
 
     switch (streamData.type) {
       case "status":
