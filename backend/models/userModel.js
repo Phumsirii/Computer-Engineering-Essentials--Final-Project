@@ -18,8 +18,8 @@ const UserSchema = new mongoose.Schema({
     type:Number,
     default:0
   },
-  Played: [{
-    roomId:{type: mongoose.Schema.ObjectId},
+  played: [{
+    roomId:{type: mongoose.Schema.ObjectId,ref:"Room"},
     result:{type: String,enum: ["Won", "Lost"]},
   }],
   salt: String

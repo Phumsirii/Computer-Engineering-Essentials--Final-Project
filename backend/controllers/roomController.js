@@ -153,42 +153,43 @@ const guessDraw = async (req, res) => {
       await roomInfo.save();
       //add points to players wining the game
       //3 points if a player wins alone, 1 point each if there are multiplae winners
-      let maxscore = 0;
-      for (let i = 0; i < 4; ++i) {
+
+      let maxscore=0;
+      roomInfo.playerList.forEach( async (player)=>{
         //see maxscore
-        maxscore = Math.max(maxscore, roomInfo.playerList[i].score);
+        maxscore=Math.max(maxscore,player.score);
         //append this room to user's played
-        const userInfo = await User.findById(roomInfo.playerList[i].user);
+        const userInfo = await User.findById(player.user.toString());
         //set default as lost, will edit later when obtaining winner's point
-        userInfo.Played.push({
-          userId: roomInfo.playerList[i].user,
-          result: "Lost",
-        });
-        userInfo.save();
-      }
-      let winners = [];
-      for (let i = 0; i < 4; ++i) {
-        if (roomInfo.playerList[i].score === maxscore) {
-          winners.push(i);
+        userInfo.played.push({roomId:roomInfo._id,result:"Lost"});
+        await userInfo.save();
+      });
+     
+      let winners=[];
+      roomInfo.playerList.forEach( async (player)=>{
+        if (player.score===maxscore){
+          winners.push(player.user.toString());
         }
-      }
+      });
       //more than one winners
       if (winners.length > 1) {
         //for all winners
-        for (let i = 0; i < winners.length; ++i) {
-          const userInfo = await User.findById(roomInfo.playerList[i].user);
+
+        winners.forEach( async (player)=>{
+          const userInfo = await User.findById(player);
           await User.findOneAndUpdate(
-            { roomId: roomInfo.playerList[i].user },
-            { $set: { result: "Won" } }
+            { 'roomId': player },
+            { $set: { 'result': "Won" } },
           );
           userInfo.points++;
-          userInfo.save();
-        }
-      } else {
-        const userInfo = await User.findById(roomInfo.playerList[0].user);
+          await userInfo.save();
+        });
+      }
+      else{
+        const userInfo = await User.findById(winners[0]);
         await User.findOneAndUpdate(
-          { roomId: roomInfo.playerList[0].user },
-          { $set: { result: "Won" } }
+          { 'roomId': winners[0] },
+          { $set: { 'result': "Won" } },
         );
         userInfo.points += 3;
         userInfo.save();
