@@ -164,7 +164,6 @@ const guessDraw = async (req, res) => {
         userInfo.played.push({roomId:roomInfo._id,result:"Lost"});
         await userInfo.save();
       });
-     
       let winners=[];
       roomInfo.playerList.forEach( async (player)=>{
         if (player.score===maxscore){
@@ -178,7 +177,7 @@ const guessDraw = async (req, res) => {
         winners.forEach( async (player)=>{
           const userInfo = await User.findById(player);
           await userInfo.played.findOneAndUpdate(
-            { 'roomId': player },
+            { 'roomId': roomInfo._id },
             { $set: { 'result': "Won" } },
           );
           userInfo.points++;
@@ -188,7 +187,7 @@ const guessDraw = async (req, res) => {
       else{
         const userInfo = await User.findById(winners[0]);
         await userInfo.played.findOneAndUpdate(
-          { 'roomId': winners[0] },
+          { 'roomId': roomInfo._id },
           { $set: { 'result': "Won" } },
         );
         userInfo.points += 3;
