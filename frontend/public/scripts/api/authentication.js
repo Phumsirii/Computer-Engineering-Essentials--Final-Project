@@ -29,6 +29,7 @@ export const signout = async () => {
 
 export const getProfile = async () => {
   const user = localStorage.getItem("user");
+
   if (!user) {
     return null;
   }

@@ -5,8 +5,25 @@ const Word = require("../models/wordModel");
 const subscribers = {};
 
 const subscribeChat = async (req, res) => {
-  // const user = req.headers["user"];
   const roomId = req.params.id;
+
+  const roomInfo = await Room.findById(roomId).populate([
+    {
+      path: "playerList.user",
+      model: "User",
+    },
+    {
+      path: "rounds.drawer",
+      model: "User",
+    },
+    {
+      path: "rounds.word",
+      model: "Word",
+    },
+  ]);
+  if (roomInfo == null) {
+    return res.status(400).json({ success: false, msg: "Room not found" });
+  }
 
   if (!subscribers[roomId]) {
     subscribers[roomId] = [];
@@ -19,14 +36,66 @@ const subscribeChat = async (req, res) => {
     Connection: "keep-alive",
     "Cache-Control": "no-cache",
   };
-
   res.writeHead(200, headers);
 
-  // const response = {
-  //   type: "connect",
-  //   data: user,
-  // };
-  // if (subscribers[roomId]) broadcast(subscribers[roomId], response);
+  // Initialize Room Info
+  if (roomInfo.status == "waiting") {
+    if (roomInfo.playerList.length < 2) {
+      const response = {
+        type: "status",
+        data: roomInfo,
+      };
+
+      if (subscribers[roomId]) {
+        broadcast(subscribers[roomId], response);
+      }
+    } else {
+      const word = await Word.aggregate([{ $sample: { size: 1 } }]);
+
+      // Change status to playing
+      roomInfo.status = "playing";
+
+      // Add round
+      roomInfo.rounds.push({
+        drawer: roomInfo.playerList[0].user._id,
+        word: word[0]._id,
+      });
+      await roomInfo.save();
+
+      await roomInfo.populate([
+        {
+          path: "playerList.user",
+          model: "User",
+        },
+        {
+          path: "rounds.drawer",
+          model: "User",
+        },
+        {
+          path: "rounds.word",
+          model: "Word",
+        },
+      ]);
+
+      const response = {
+        type: "status",
+        data: roomInfo,
+      };
+
+      if (subscribers[roomId]) {
+        broadcast(subscribers[roomId], response);
+      }
+    }
+  } else if (roomInfo.status == "playing") {
+    const response = {
+      type: "status",
+      data: roomInfo,
+    };
+
+    if (subscribers[roomId]) {
+      broadcast(subscribers[roomId], response);
+    }
+  }
 
   req.on("close", () => {
     res.end();
@@ -46,17 +115,32 @@ const postDraw = async (req, res) => {
   res.status(200).send("Draw posted");
 };
 
-const getRoomStatus = async (req, res) => {
+const guessDraw = async (req, res) => {
   const roomId = req.params.id;
-  const room = await Room.findById(roomId).populate("playerList");
-  if (!room) {
+  const { answer } = req.body;
+
+  const roomInfo = await Room.findById(roomId).populate([
+    {
+      path: "playerList.user",
+      model: "User",
+    },
+    {
+      path: "rounds.drawer",
+      model: "User",
+    },
+    {
+      path: "rounds.word",
+      model: "Word",
+    },
+  ]);
+
+  if (roomInfo == null) {
     return res.status(400).json({ success: false, msg: "Room not found" });
   }
-  res.status(200).json({
-    success: true,
-    data: room,
-    status: room.playerList.length == 2 ? "playing" : "waiting",
-  });
+
+  const currentRound = roomInfo.rounds[roomInfo.rounds.length - 1];
+
+  res.status(200).send("Guess posted");
 };
 
 const createRoom = async (req, res) => {
@@ -145,53 +229,9 @@ const joinRoom = async (req, res) => {
         .status(400)
         .json({ success: false, msg: "Player is already in the room." });
     }
-    room.playerList.push(newplayer);
+    room.playerList.push({ user: newplayer, score: 0 });
+
     await room.save();
-
-    const roomInfo = await Room.findById(roomId).populate("playerList");
-    const response = {
-      type: "join",
-      data: roomInfo.playerList,
-    };
-
-    if (subscribers[roomId]) {
-      broadcast(subscribers[roomId], response);
-    }
-
-    // Start Playing Game
-    if (roomInfo.playerList.length === 2) {
-      const response = {
-        type: "status",
-        data: "playing",
-      };
-      if (subscribers[roomId]) {
-        broadcast(subscribers[roomId], response);
-      }
-
-      // Start Game
-      // Push to rounds
-      const randomWord = await Word.aggregate([{ $sample: { size: 1 } }]);
-      // console.log(randomWord);
-      const round = {
-        drawer: roomInfo.playerList[0],
-        word: randomWord[0]._id,
-        guesses: [],
-      };
-      roomInfo.rounds.push(round);
-      await roomInfo.save();
-
-      const response2 = {
-        type: "round",
-        data: {
-          drawer: roomInfo.playerList[0],
-          word: randomWord[0].word,
-        },
-      };
-
-      if (subscribers[roomId]) {
-        broadcast(subscribers[roomId], response2);
-      }
-    }
 
     res.status(200).json({ success: true, data: room.playerList });
   } catch (err) {
@@ -210,19 +250,37 @@ const quitRoom = async (req, res) => {
         .json({ success: false, msg: "Cannot find the room." });
     }
     const leavingplayer = req.body.userId;
-    const leavingplayerIndex = room.playerList.indexOf(leavingplayer);
+    // change to new schema
+    const leavingplayerIndex = room.playerList.findIndex(
+      (player) => player.user == leavingplayer
+    );
     if (leavingplayerIndex === -1) {
       return res
         .status(400)
         .json({ success: false, msg: "Player is not in the room." });
     }
+
     room.playerList.splice(leavingplayerIndex, 1);
     await room.save();
 
-    const roomInfo = await Room.findById(roomId).populate("playerList");
+    // When Leave Room, Send Updated Room Info
+    const roomInfo = await Room.findById(roomId).populate([
+      {
+        path: "playerList.user",
+        model: "User",
+      },
+      {
+        path: "rounds.drawer",
+        model: "User",
+      },
+      {
+        path: "rounds.word",
+        model: "Word",
+      },
+    ]);
     const response = {
-      type: "join",
-      data: roomInfo.playerList,
+      type: "status",
+      data: roomInfo,
     };
 
     if (subscribers[roomId]) {
@@ -241,6 +299,7 @@ const quitRoom = async (req, res) => {
 module.exports = {
   subscribeChat,
   postDraw,
+  guessDraw,
   createRoom,
   getRoom,
   getRooms,
@@ -248,5 +307,4 @@ module.exports = {
   deleteRoom,
   joinRoom,
   quitRoom,
-  getRoomStatus,
 };

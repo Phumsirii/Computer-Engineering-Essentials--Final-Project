@@ -5,27 +5,37 @@ const roomSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  status: {
+    type: String,
+    enum: ["waiting", "playing", "gameover"],
+    default: "waiting",
+  },
   playerList: [
     {
-      type: mongoose.Schema.ObjectId,
-      ref: "User",
+      user: { type: mongoose.Schema.ObjectId, ref: "User" },
+      score: { type: Number, default: 0 },
     },
   ],
   rounds: [
     {
       drawer: {
         type: mongoose.Schema.ObjectId,
-        ref: "user",
+        ref: "User",
       },
       word: {
         type: mongoose.Schema.ObjectId,
-        ref: "word",
+        ref: "Word",
+      },
+      status: {
+        type: String,
+        enum: ["current", "ended"],
+        default: "current",
       },
       guesses: [
         {
           player: {
             type: mongoose.Schema.ObjectId,
-            ref: "user",
+            ref: "User",
           },
           guess: {
             type: String,
