@@ -14,7 +14,6 @@ export let isDrawer = false;
 
 export const setRoomInfo = (info) => {
   roomInfo = info;
-  console.log(info);
 };
 
 export const setDrawer = (drawer) => {

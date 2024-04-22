@@ -190,7 +190,7 @@ export const displayPlayersInRoom = (playerList) => {
 
     const playerScore = document.createElement("p");
     playerScore.classList.add("text-base");
-    playerScore.textContent = 100;
+    playerScore.textContent = player.score;
 
     playerInfo.append(playerName, playerScore);
 
