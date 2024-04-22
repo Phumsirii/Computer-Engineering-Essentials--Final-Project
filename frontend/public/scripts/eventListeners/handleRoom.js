@@ -230,5 +230,6 @@ export const renderRoomStatus = (status, isDrawer) => {
 };
 
 export const renderPlayerScoreSummary = (playerList) => {
+  // TODO: Aungpao add the player score summary here at gameover modal
   console.log(playerList);
 };
