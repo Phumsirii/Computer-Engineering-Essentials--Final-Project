@@ -1,6 +1,7 @@
 const { broadcast } = require("../utils/sse");
 const Room = require("../models/roomModel");
 const Word = require("../models/wordModel");
+const User = require("../models/userModel");
 
 const subscribers = {};
 
@@ -151,7 +152,37 @@ const guessDraw = async (req, res) => {
       await roomInfo.save();
       //add points to players wining the game
       //3 points if a player wins alone, 1 point each if there are multiplae winners
-
+      let maxscore=0;
+      for(let i=0;i<4;++i){
+        //see maxscore
+        maxscore=Math.max(maxscore,roomInfo.playerList[i].score);
+        //append this room to user's played
+        const userInfo = await User.findById(roomInfo.playerList[i].user);
+        userInfo.Played.push(roomInfo.playerList[i].user);
+        userInfo.save();
+      }
+      let winners=[];
+      for(let i=0;i<4;++i){
+        if(roomInfo.playerList[i].score===maxscore){
+          winners.push(i);
+        }
+      }
+      //more than one winners
+      if (winners.length>1){
+        //for all winners
+        for(let i=0;i<winners.length;++i){
+          const userInfo = await User.findById(roomInfo.playerList[i].user);
+          userInfo.Wins.push(roomInfo.playerList[i].user);
+          userInfo.points++;
+          userInfo.save();
+        }
+      }
+      else{
+        const userInfo = await User.findById(roomInfo.playerList[0].user);
+        userInfo.Wins.push(roomInfo.playerList[0].user);
+        userInfo.points+=3;
+        userInfo.save();
+      }
       sendRoomInfo(roomId);
     } else {
       currentRound.status = "ended";

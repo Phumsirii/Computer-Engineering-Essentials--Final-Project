@@ -14,16 +14,20 @@ const UserSchema = new mongoose.Schema({
     minlength: 6,
     select: false
   },
-  Wins: {
+  points:{
+    type:Number,
+    default:0
+  },
+  Wins: [{
     type: mongoose.Schema.ObjectId,
     ref: String,
     default: null,
-  },
-  Played: {
+  }],
+  Played: [{
     type: mongoose.Schema.ObjectId,
     ref: String,
     default: null,
-  },
+  }],
   salt: String
 });
 
