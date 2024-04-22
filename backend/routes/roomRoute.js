@@ -10,20 +10,24 @@ const {
   deleteRoom,
   joinRoom,
   quitRoom,
-  getRoomStatus,
+  playGame,
 } = require("../controllers/roomController");
 
 const router = express.Router();
 
-// router.get("/", getRoom);
-router.post("/", createRoom);
+// game routes
 router.get("/:id/subscribe", subscribeChat);
 router.post("/:id/draw", postDraw);
 router.post("/:id/guess", guessDraw);
 
-router.get("/", getRooms);
-router.route("/:id").get(getRoom).put(updateRoom).delete(deleteRoom);
 router.route("/:id/join").post(joinRoom);
 router.route("/:id/quit").delete(quitRoom);
+router.route("/:id/play").post(playGame);
+
+// normal routes
+router.get("/", getRoom);
+router.post("/", createRoom);
+router.get("/", getRooms);
+router.route("/:id").get(getRoom).put(updateRoom).delete(deleteRoom);
 
 module.exports = router;

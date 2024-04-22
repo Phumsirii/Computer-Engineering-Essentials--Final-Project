@@ -57,6 +57,7 @@ const sendRoomInfo = async (roomId) => {
   }
 };
 
+// API
 const subscribeChat = async (req, res) => {
   const roomId = req.params.id;
 
@@ -77,12 +78,7 @@ const subscribeChat = async (req, res) => {
   };
   res.writeHead(200, headers);
 
-  // Initialize Room Info
-  if (roomInfo.status == "waiting" && roomInfo.playerList.length >= 4) {
-    startNewRound(roomId);
-  } else {
-    sendRoomInfo(roomId);
-  }
+  sendRoomInfo(roomId);
 
   req.on("close", () => {
     res.end();
@@ -163,6 +159,28 @@ const guessDraw = async (req, res) => {
     success: true,
     msg: "Guess posted",
   });
+};
+
+const playGame = async (req, res) => {
+  const roomId = req.params.id;
+  const roomInfo = await Room.findById(roomId);
+
+  if (roomInfo.status == "playing") {
+    return res
+      .status(400)
+      .json({ success: false, msg: "Game already started" });
+  }
+
+  if (roomInfo.status == "gameover") {
+    return res.status(400).json({ success: false, msg: "Game already over" });
+  }
+
+  if (roomInfo.playerList.length < 2) {
+    return res.status(400).json({ success: false, msg: "Not enough players" });
+  }
+
+  startNewRound(roomId);
+  res.status(200).json({ success: true, msg: "Game started" });
 };
 
 const createRoom = async (req, res) => {
@@ -343,4 +361,5 @@ module.exports = {
   deleteRoom,
   joinRoom,
   quitRoom,
+  playGame,
 };
