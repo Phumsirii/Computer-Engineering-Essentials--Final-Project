@@ -186,7 +186,7 @@ export const displayPlayersInRoom = (playerList) => {
 
     const playerName = document.createElement("h3");
     playerName.classList.add("text-lg");
-    playerName.textContent = player.username;
+    playerName.textContent = player.user.username;
 
     const playerScore = document.createElement("p");
     playerScore.classList.add("text-base");

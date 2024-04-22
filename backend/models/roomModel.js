@@ -12,8 +12,8 @@ const roomSchema = new mongoose.Schema({
   },
   playerList: [
     {
-      type: mongoose.Schema.ObjectId,
-      ref: "User",
+      user: { type: mongoose.Schema.ObjectId, ref: "User" },
+      score: { type: Number, default: 0 },
     },
   ],
   rounds: [

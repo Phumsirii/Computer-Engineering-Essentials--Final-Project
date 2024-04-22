@@ -2,6 +2,7 @@ const express = require("express");
 const {
   subscribeChat,
   postDraw,
+  guessDraw,
   createRoom,
   getRoom,
   getRooms,
@@ -18,7 +19,8 @@ const router = express.Router();
 router.post("/", createRoom);
 router.get("/:id/subscribe", subscribeChat);
 router.post("/:id/draw", postDraw);
-router.get("/:id/status", getRoomStatus);
+router.post("/:id/guess", guessDraw);
+
 router.get("/", getRooms);
 router.route("/:id").get(getRoom).put(updateRoom).delete(deleteRoom);
 router.route("/:id/join").post(joinRoom);
