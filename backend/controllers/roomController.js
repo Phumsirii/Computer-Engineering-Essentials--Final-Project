@@ -5,43 +5,19 @@ const Word = require("../models/wordModel");
 const subscribers = {};
 
 // Utils
-const startNewRound = async () => {
-  // get random word
-  const word = await Word.aggregate([{ $sample: { size: 1 } }]);
-
-  // Change status to playing
+const startNewRound = async (roomId) => {
+  const roomInfo = await Room.findById(roomId);
   roomInfo.status = "playing";
 
-  // Add round
+  const word = await Word.aggregate([{ $sample: { size: 1 } }]);
   roomInfo.rounds.push({
     drawer: roomInfo.playerList[0].user._id,
     word: word[0]._id,
   });
+
   await roomInfo.save();
 
-  await roomInfo.populate([
-    {
-      path: "playerList.user",
-      model: "User",
-    },
-    {
-      path: "rounds.drawer",
-      model: "User",
-    },
-    {
-      path: "rounds.word",
-      model: "Word",
-    },
-  ]);
-
-  const response = {
-    type: "status",
-    data: roomInfo,
-  };
-
-  if (subscribers[roomId]) {
-    broadcast(subscribers[roomId], response);
-  }
+  sendRoomInfo(roomId);
 };
 
 const sendRoomInfo = async (roomId) => {
@@ -92,7 +68,7 @@ const subscribeChat = async (req, res) => {
 
   // Initialize Room Info
   if (roomInfo.status == "waiting" && roomInfo.playerList.length >= 2) {
-    startNewRound();
+    startNewRound(roomId);
   } else {
     sendRoomInfo(roomId);
   }
@@ -138,7 +114,6 @@ const guessDraw = async (req, res) => {
     return res.status(400).json({ success: false, msg: "Room not found" });
   }
 
-  // Check if the answer is correct
   const currentRound = roomInfo.rounds[roomInfo.rounds.length - 1];
   if (currentRound.word.word == answer) {
     // Update score to Drawer
@@ -156,33 +131,12 @@ const guessDraw = async (req, res) => {
     // Add to guesses
     currentRound.guesses.push({ player: userId, guess: answer });
 
-    // Change status to ended
-    currentRound.status = "ended";
-
     await roomInfo.save();
 
-    await roomInfo.populate([
-      {
-        path: "playerList.user",
-        model: "User",
-      },
-      {
-        path: "rounds.drawer",
-        model: "User",
-      },
-      {
-        path: "rounds.word",
-        model: "Word",
-      },
-    ]);
-
-    const response = {
-      type: "status",
-      data: roomInfo,
-    };
-
-    if (subscribers[roomId]) {
-      broadcast(subscribers[roomId], response);
+    if (currentRound.guesses.length == roomInfo.playerList.length - 1) {
+      currentRound.status = "ended";
+      await roomInfo.save();
+      startNewRound();
     }
   }
 
