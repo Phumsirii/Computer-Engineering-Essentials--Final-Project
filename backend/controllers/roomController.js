@@ -127,7 +127,7 @@ const guessDraw = async (req, res) => {
       (player) => player.user.toString() == currentRound.drawer.toString()
     );
     roomInfo.playerList[drawerIndex].score +=
-      100 / roomInfo.playerList.length - 1;
+      100 / (roomInfo.playerList.length - 1);
 
     // Update score to Guesser
     const guesserIndex = roomInfo.playerList.findIndex(
