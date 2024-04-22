@@ -149,6 +149,9 @@ const guessDraw = async (req, res) => {
     if (roomInfo.rounds.length == roomInfo.playerList.length) {
       roomInfo.status = "gameover";
       await roomInfo.save();
+      //add points to players wining the game
+      //3 points if a player wins alone, 1 point each if there are multiplae winners
+
       sendRoomInfo(roomId);
     } else {
       currentRound.status = "ended";
@@ -246,6 +249,11 @@ const joinRoom = async (req, res) => {
       return res
         .status(400)
         .json({ success: false, msg: "This room is already playing." });
+    }
+    if (room.status === "gameover") {
+      return res
+        .status(400)
+        .json({ success: false, msg: "This game is already over." });
     }
 
     const newplayer = req.body.userId;
