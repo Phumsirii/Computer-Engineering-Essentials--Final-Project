@@ -95,15 +95,11 @@ const guessDraw = async (req, res) => {
   const roomId = req.params.id;
   const { answer, userId } = req.body;
 
+  if (!answer || !userId) {
+    return res.status(400).json({ success: false, msg: "Invalid request" });
+  }
+
   const roomInfo = await Room.findById(roomId).populate([
-    {
-      path: "playerList.user",
-      model: "User",
-    },
-    {
-      path: "rounds.drawer",
-      model: "User",
-    },
     {
       path: "rounds.word",
       model: "Word",
@@ -115,29 +111,29 @@ const guessDraw = async (req, res) => {
   }
 
   const currentRound = roomInfo.rounds[roomInfo.rounds.length - 1];
-  if (currentRound.word.word == answer) {
+  if (currentRound.word.word.toLowerCase() == answer.toLowerCase()) {
     // Update score to Drawer
     const drawerIndex = roomInfo.playerList.findIndex(
-      (player) => player.user == currentRound.drawer
+      (player) => player.user.toString() == currentRound.drawer.toString()
     );
-    roomInfo.playerList[drawerIndex].score += 100;
+    roomInfo.playerList[drawerIndex].score += 25;
 
     // Update score to Guesser
     const guesserIndex = roomInfo.playerList.findIndex(
-      (player) => player.user == userId
+      (player) => player.user.toString() == userId
     );
     roomInfo.playerList[guesserIndex].score += 100;
+  }
 
-    // Add to guesses
-    currentRound.guesses.push({ player: userId, guess: answer });
+  // Add to guesses
+  currentRound.guesses.push({ player: userId, guess: answer });
 
+  await roomInfo.save();
+
+  if (currentRound.guesses.length == roomInfo.playerList.length - 1) {
+    currentRound.status = "ended";
     await roomInfo.save();
-
-    if (currentRound.guesses.length == roomInfo.playerList.length - 1) {
-      currentRound.status = "ended";
-      await roomInfo.save();
-      startNewRound();
-    }
+    startNewRound(roomId);
   }
 
   res.status(200).send("Guess posted");
