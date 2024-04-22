@@ -25,6 +25,7 @@ export const setDrawer = (drawer) => {
 export const initializeGame = (roomId) => {
   let drawLog = [];
   let newDrawing = [];
+  let currentRound = -1;
 
   const sse = new EventSource(`${BACKEND_URL}/room/${roomId}/subscribe`);
 
@@ -40,6 +41,19 @@ export const initializeGame = (roomId) => {
         const rounds = streamData.data.rounds;
 
         if (rounds.length == 0) return;
+        if (
+          currentRound != -1 &&
+          status !== "gameover" &&
+          currentRound != rounds.length - 1
+        ) {
+          currentRound = rounds.length - 1;
+          document.querySelector("#start-newround-modal").style.display =
+            "block";
+          setTimeout(() => {
+            document.querySelector("#start-newround-modal").style.display =
+              "none";
+          }, 1000);
+        }
         const lastRound = rounds[rounds.length - 1];
 
         setDrawer(lastRound.drawer.username === (await getProfile()).username);

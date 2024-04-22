@@ -70,13 +70,15 @@
           </div>
         </div>
         <div>
-          <div id="guessed-word-container" class="p-4 bg-black/25 rounded-3xl">
+          <div
+            id="guessed-word-container"
+            class="p-4 bg-black/25 rounded-3xl"
+            style="display: none"
+          >
             <div
               id="guessed-word"
               class="text-center gatuk-heading-subtitle text-white text-2xl"
-            >
-              dasd
-            </div>
+            ></div>
           </div>
           <form id="submit-word-form" class="p-4 bg-black/25 rounded-3xl">
             <input
@@ -100,11 +102,19 @@
     <div
       id="gameover-modal"
       class="fixed top-1/2 left-1/2 bg-black/25 p-8 rounded-2xl"
-      style="transform: translateX(-50%, -50%)"
+      style="transform: translateX(-50%, -50%); display: none"
     >
       <div class="gatuk-heading-subtitle text-4xl">Gameover</div>
       <div id="player-score-summary"></div>
       <button id="quit-gameover">Back to main menu</button>
+    </div>
+
+    <div
+      id="start-newround-modal"
+      class="fixed top-1/2 left-1/2 bg-black/25 py-4 px-8 rounded-2xl shadow-lg"
+      style="transform: translateX(-50%, -50%); display: none"
+    >
+      <div class="gatuk-heading-subtitle text-4xl">Starting New Round...</div>
     </div>
 
     <script type="module" src="/scripts/pages/rooms/[id]/index.js"></script>
