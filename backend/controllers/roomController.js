@@ -171,7 +171,7 @@ const guessDraw = async (req, res) => {
         //for all winners
         winners.forEach( async (player)=>{
           const userInfo = await User.findById(player);
-          await User.findOneAndUpdate(
+          await userInfo.played.findOneAndUpdate(
             { 'roomId': player },
             { $set: { 'result': "Won" } },
           );
@@ -181,7 +181,7 @@ const guessDraw = async (req, res) => {
       }
       else{
         const userInfo = await User.findById(winners[0]);
-        await User.findOneAndUpdate(
+        await userInfo.played.findOneAndUpdate(
           { 'roomId': winners[0] },
           { $set: { 'result': "Won" } },
         );
