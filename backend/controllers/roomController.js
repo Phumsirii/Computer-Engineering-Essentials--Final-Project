@@ -17,9 +17,12 @@ const startNewRound = async (roomId) => {
   const roomInfo = await Room.findById(roomId);
   roomInfo.status = "playing";
 
+  console.log(roomInfo.rounds.length % roomInfo.playerList.length);
   const word = await Word.aggregate([{ $sample: { size: 1 } }]);
   roomInfo.rounds.push({
-    drawer: roomInfo.playerList[0].user._id,
+    drawer:
+      roomInfo.playerList[roomInfo.rounds.length % roomInfo.playerList.length]
+        .user._id,
     word: word[0]._id,
   });
 
@@ -128,7 +131,7 @@ const guessDraw = async (req, res) => {
     const drawerIndex = roomInfo.playerList.findIndex(
       (player) => player.user.toString() == currentRound.drawer.toString()
     );
-    roomInfo.playerList[drawerIndex].score += 25;
+    roomInfo.playerList[drawerIndex].score += 100 / roomInfo.playerList.length;
 
     // Update score to Guesser
     const guesserIndex = roomInfo.playerList.findIndex(
