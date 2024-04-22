@@ -18,15 +18,9 @@ const UserSchema = new mongoose.Schema({
     type:Number,
     default:0
   },
-  Wins: [{
-    type: mongoose.Schema.ObjectId,
-    ref: String,
-    default: null,
-  }],
   Played: [{
-    type: mongoose.Schema.ObjectId,
-    ref: String,
-    default: null,
+    roomId:{type: mongoose.Schema.ObjectId},
+    result:{type: String,enum: ["Won", "Lost"]},
   }],
   salt: String
 });

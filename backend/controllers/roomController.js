@@ -155,7 +155,8 @@ const guessDraw = async (req, res) => {
         maxscore=Math.max(maxscore,roomInfo.playerList[i].score);
         //append this room to user's played
         const userInfo = await User.findById(roomInfo.playerList[i].user);
-        userInfo.Played.push(roomInfo.playerList[i].user);
+        //set default as lost, will edit later when obtaining winner's point
+        userInfo.Played.push({userId:roomInfo.playerList[i].user,result:"Lost"});
         userInfo.save();
       }
       let winners=[];
@@ -169,14 +170,20 @@ const guessDraw = async (req, res) => {
         //for all winners
         for(let i=0;i<winners.length;++i){
           const userInfo = await User.findById(roomInfo.playerList[i].user);
-          userInfo.Wins.push(roomInfo.playerList[i].user);
+          await User.findOneAndUpdate(
+            { 'roomId': roomInfo.playerList[i].user },
+            { $set: { 'result': "Won" } },
+          );
           userInfo.points++;
           userInfo.save();
         }
       }
       else{
         const userInfo = await User.findById(roomInfo.playerList[0].user);
-        userInfo.Wins.push(roomInfo.playerList[0].user);
+        await User.findOneAndUpdate(
+          { 'roomId': roomInfo.playerList[0].user },
+          { $set: { 'result': "Won" } },
+        );
         userInfo.points+=3;
         userInfo.save();
       }
