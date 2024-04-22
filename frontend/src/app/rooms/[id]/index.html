@@ -6,7 +6,6 @@
     <title>Gatuk</title>
     <link rel="stylesheet" href="/css/gatuk.css" />
     <link rel="stylesheet" href="/css/stylesheets.css" />
-    <!-- <link rel="stylesheet" href="style.css" /> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
   </head>
 
@@ -71,14 +70,19 @@
           </div>
         </div>
         <div>
-          <form
-            id="submit-word-form"
-            class="p-4 flex items-center justify-end space-x-8 bg-black/25 rounded-3xl"
-          >
+          <div id="guessed-word-container" class="p-4 bg-black/25 rounded-3xl">
+            <div
+              id="guessed-word"
+              class="text-center gatuk-heading-subtitle text-white text-2xl"
+            >
+              dasd
+            </div>
+          </div>
+          <form id="submit-word-form" class="p-4 bg-black/25 rounded-3xl">
             <input
               type="text"
               id="input-word"
-              class="gatuk-input-form p-2 rounded-2xl w-full text-center text-yellow"
+              class="gatuk-input-form p-2 rounded-2xl w-full text-center text-yellow mx-0"
               placeholder="input your guess here!"
             />
           </form>

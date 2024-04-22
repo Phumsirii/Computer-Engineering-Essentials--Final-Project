@@ -206,6 +206,7 @@ export const renderWord = (word) => {
 
 export const renderRoomStatus = (status, isDrawer) => {
   if (status === "waiting") {
+    document.querySelector("#guessed-word-container").style.display = "none";
     document.querySelector("#waiting-container").style.display = "block";
     document.querySelector("#submit-word-form").style.display = "none";
     document.querySelector("#draw-word-container").style.display = "none";
@@ -219,13 +220,26 @@ export const renderRoomStatus = (status, isDrawer) => {
       document.querySelector("#draw-word-container").style.display = "none";
     }
 
+    document.querySelector("#guessed-word-container").style.display = "none";
     document.querySelector("#waiting-container").style.display = "none";
     document.querySelector("#gameover-modal").style.display = "none";
   } else if (status === "gameover") {
+    document.querySelector("#guessed-word-container").style.display = "none";
     document.querySelector("#waiting-container").style.display = "none";
     document.querySelector("#submit-word-form").style.display = "none";
     document.querySelector("#draw-word-container").style.display = "none";
     document.querySelector("#gameover-modal").style.display = "block";
+  }
+};
+
+export const renderGuessedWord = (isGuess, word) => {
+  if (isGuess) {
+    document.querySelector("#guessed-word").textContent = word;
+    document.querySelector("#guessed-word-container").style.display = "block";
+    document.querySelector("#submit-word-form").style.display = "none";
+  } else {
+    document.querySelector("#guessed-word-container").style.display = "none";
+    document.querySelector("#submit-word-form").style.display = "block";
   }
 };
 

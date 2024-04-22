@@ -5,6 +5,7 @@ import {
   renderRoomStatus,
   renderWord,
   renderPlayerScoreSummary,
+  renderGuessedWord,
 } from "../eventListeners/handleRoom.js";
 import { roomId } from "../pages/rooms/[id]/index.js";
 import { getProfile } from "../api/authentication.js";
@@ -52,6 +53,19 @@ export const initializeGame = (roomId) => {
         const status = streamData.data.status;
         renderRoomStatus(status, isDrawer);
         if (status === "gameover") renderPlayerScoreSummary(playerList);
+
+        // Render guessed words
+        const playerId = (await getProfile())._id;
+        const filteredGuessFromPlayer = lastRound.guesses.filter(
+          (guess) => guess.player === playerId
+        );
+        if (!isDrawer) {
+          if (filteredGuessFromPlayer.length > 0) {
+            renderGuessedWord(true, filteredGuessFromPlayer[0].guess);
+          } else {
+            renderGuessedWord(false, "");
+          }
+        }
 
         break;
       case "draw":
