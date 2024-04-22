@@ -39,21 +39,21 @@ export const initializeGame = (roomId) => {
 
         // Word Management
         const rounds = streamData.data.rounds;
+        const status = streamData.data.status;
 
         if (rounds.length == 0) return;
-        if (
-          currentRound != -1 &&
-          status !== "gameover" &&
-          currentRound != rounds.length - 1
-        ) {
+        if (currentRound != rounds.length - 1) {
           currentRound = rounds.length - 1;
-          document.querySelector("#start-newround-modal").style.display =
-            "block";
-          setTimeout(() => {
+          if (currentRound != -1 && status !== "gameover") {
             document.querySelector("#start-newround-modal").style.display =
-              "none";
-          }, 1000);
+              "block";
+            setTimeout(() => {
+              document.querySelector("#start-newround-modal").style.display =
+                "none";
+            }, 1000);
+          }
         }
+
         const lastRound = rounds[rounds.length - 1];
 
         setDrawer(lastRound.drawer.username === (await getProfile()).username);
@@ -64,7 +64,6 @@ export const initializeGame = (roomId) => {
         }
 
         // Render From Game State
-        const status = streamData.data.status;
         renderRoomStatus(status, isDrawer);
         if (status === "gameover") renderPlayerScoreSummary(playerList);
 
