@@ -199,3 +199,25 @@ export const displayPlayersInRoom = (playerList) => {
     document.querySelector("#users-container").appendChild(playerContainer);
   });
 };
+
+export const renderWord = (word) => {
+  document.querySelector("#draw-word").textContent = word;
+};
+
+export const renderRoomStatus = (status, isDrawer) => {
+  if (status === "waiting") {
+    document.querySelector("#waiting-container").style.display = "block";
+    document.querySelector("#submit-word-form").style.display = "none";
+    document.querySelector("#draw-word-container").style.display = "none";
+  } else if (status === "playing") {
+    if (isDrawer) {
+      document.querySelector("#waiting-container").style.display = "none";
+      document.querySelector("#submit-word-form").style.display = "none";
+      document.querySelector("#draw-word-container").style.display = "block";
+    } else {
+      document.querySelector("#waiting-container").style.display = "none";
+      document.querySelector("#submit-word-form").style.display = "block";
+      document.querySelector("#draw-word-container").style.display = "none";
+    }
+  }
+};

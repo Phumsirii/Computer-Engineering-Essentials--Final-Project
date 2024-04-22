@@ -19,53 +19,53 @@ export const handleQuitRoom = () => {
   });
 };
 
-export const handleGetAllUsers = async () => {
-  const users = await getUsers();
-  const usersContainer = document.querySelector("#users-container");
-  users.data.forEach((user) => {
-    const userContainer = document.createElement("div");
-    userContainer.classList.add(
-      "flex",
-      "flex-row",
-      "items-center",
-      "justify-between",
-      "bg-white/25",
-      "rounded-2xl",
-      "p-2"
-    );
+// export const handleGetAllUsers = async () => {
+//   const users = await getUsers();
+//   const usersContainer = document.querySelector("#users-container");
+//   users.data.forEach((user) => {
+//     const userContainer = document.createElement("div");
+//     userContainer.classList.add(
+//       "flex",
+//       "flex-row",
+//       "items-center",
+//       "justify-between",
+//       "bg-white/25",
+//       "rounded-2xl",
+//       "p-2"
+//     );
 
-    const userImage = document.createElement("img");
-    userImage.src = "/assets/Ricardo_Milos.jpg";
-    userImage.classList.add(
-      "w-20",
-      "h-20",
-      "object-cover",
-      "rounded-full",
-      "border-4",
-      "border-gatuk"
-    );
-    userImage.alt = "profile";
+//     const userImage = document.createElement("img");
+//     userImage.src = "/assets/Ricardo_Milos.jpg";
+//     userImage.classList.add(
+//       "w-20",
+//       "h-20",
+//       "object-cover",
+//       "rounded-full",
+//       "border-4",
+//       "border-gatuk"
+//     );
+//     userImage.alt = "profile";
 
-    const userInfo = document.createElement("div");
-    userInfo.classList.add("user-info", "text-white", "items-end");
+//     const userInfo = document.createElement("div");
+//     userInfo.classList.add("user-info", "text-white", "items-end");
 
-    const userName = document.createElement("h3");
-    userName.classList.add("text-lg");
-    userName.textContent = user.username;
+//     const userName = document.createElement("h3");
+//     userName.classList.add("text-lg");
+//     userName.textContent = user.username;
 
-    const userScore = document.createElement("p");
-    userScore.classList.add("text-base");
-    userScore.textContent = user.score;
+//     const userScore = document.createElement("p");
+//     userScore.classList.add("text-base");
+//     userScore.textContent = user.score;
 
-    userInfo.appendChild(userName);
-    userInfo.appendChild(userScore);
+//     userInfo.appendChild(userName);
+//     userInfo.appendChild(userScore);
 
-    userContainer.appendChild(userImage);
-    userContainer.appendChild(userInfo);
+//     userContainer.appendChild(userImage);
+//     userContainer.appendChild(userInfo);
 
-    usersContainer.appendChild(userContainer);
-  });
-};
+//     usersContainer.appendChild(userContainer);
+//   });
+// };
 
 export const handleSubmitWord = () => {
   document

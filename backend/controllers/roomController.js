@@ -5,8 +5,30 @@ const Word = require("../models/wordModel");
 const subscribers = {};
 
 const subscribeChat = async (req, res) => {
-  // const user = req.headers["user"];
   const roomId = req.params.id;
+
+  // const roomInfo = await Room.findById(roomId)
+  //   .populate("playerList")
+  //   .populate("rounds.drawer")
+  //   .populate("rounds.word");
+
+  const roomInfo = await Room.findById(roomId).populate([
+    {
+      path: "playerList",
+      model: "User",
+    },
+    {
+      path: "rounds.drawer",
+      model: "User",
+    },
+    {
+      path: "rounds.word",
+      model: "Word",
+    },
+  ]);
+  if (roomInfo == null) {
+    return res.status(400).json({ success: false, msg: "Room not found" });
+  }
 
   if (!subscribers[roomId]) {
     subscribers[roomId] = [];
@@ -19,14 +41,66 @@ const subscribeChat = async (req, res) => {
     Connection: "keep-alive",
     "Cache-Control": "no-cache",
   };
-
   res.writeHead(200, headers);
 
-  // const response = {
-  //   type: "connect",
-  //   data: user,
-  // };
-  // if (subscribers[roomId]) broadcast(subscribers[roomId], response);
+  // Initialize Room Info
+  if (roomInfo.status == "waiting") {
+    if (roomInfo.playerList.length < 2) {
+      const response = {
+        type: "status",
+        data: roomInfo,
+      };
+
+      if (subscribers[roomId]) {
+        broadcast(subscribers[roomId], response);
+      }
+    } else {
+      const word = await Word.aggregate([{ $sample: { size: 1 } }]);
+
+      // Change status to playing
+      roomInfo.status = "playing";
+
+      // Add round
+      roomInfo.rounds.push({
+        drawer: roomInfo.playerList[0]._id,
+        word: word[0]._id,
+      });
+      await roomInfo.save();
+
+      roomInfo.populate([
+        {
+          path: "playerList",
+          model: "User",
+        },
+        {
+          path: "rounds.drawer",
+          model: "User",
+        },
+        {
+          path: "rounds.word",
+          model: "Word",
+        },
+      ]);
+
+      const response = {
+        type: "status",
+        data: roomInfo,
+      };
+
+      if (subscribers[roomId]) {
+        broadcast(subscribers[roomId], response);
+      }
+    }
+  } else if (roomInfo.status == "playing") {
+    const response = {
+      type: "status",
+      data: roomInfo,
+    };
+
+    if (subscribers[roomId]) {
+      broadcast(subscribers[roomId], response);
+    }
+  }
 
   req.on("close", () => {
     res.end();
@@ -148,51 +222,6 @@ const joinRoom = async (req, res) => {
     room.playerList.push(newplayer);
     await room.save();
 
-    const roomInfo = await Room.findById(roomId).populate("playerList");
-    const response = {
-      type: "join",
-      data: roomInfo.playerList,
-    };
-
-    if (subscribers[roomId]) {
-      broadcast(subscribers[roomId], response);
-    }
-
-    // Start Playing Game
-    if (roomInfo.playerList.length === 2) {
-      const response = {
-        type: "status",
-        data: "playing",
-      };
-      if (subscribers[roomId]) {
-        broadcast(subscribers[roomId], response);
-      }
-
-      // Start Game
-      // Push to rounds
-      const randomWord = await Word.aggregate([{ $sample: { size: 1 } }]);
-      // console.log(randomWord);
-      const round = {
-        drawer: roomInfo.playerList[0],
-        word: randomWord[0]._id,
-        guesses: [],
-      };
-      roomInfo.rounds.push(round);
-      await roomInfo.save();
-
-      const response2 = {
-        type: "round",
-        data: {
-          drawer: roomInfo.playerList[0],
-          word: randomWord[0].word,
-        },
-      };
-
-      if (subscribers[roomId]) {
-        broadcast(subscribers[roomId], response2);
-      }
-    }
-
     res.status(200).json({ success: true, data: room.playerList });
   } catch (err) {
     console.log(err);
@@ -219,10 +248,11 @@ const quitRoom = async (req, res) => {
     room.playerList.splice(leavingplayerIndex, 1);
     await room.save();
 
+    // When Leave Room, Send Updated Room Info
     const roomInfo = await Room.findById(roomId).populate("playerList");
     const response = {
-      type: "join",
-      data: roomInfo.playerList,
+      type: "status",
+      data: roomInfo,
     };
 
     if (subscribers[roomId]) {

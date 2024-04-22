@@ -1,28 +1,69 @@
 import { drawing } from "../api/rooms.js";
 import { BACKEND_URL } from "../config.js";
-import { displayPlayersInRoom } from "../eventListeners/handleRoom.js";
-import { setWord } from "../pages/rooms/[id]/index.js";
-import { isDrawer, setDrawer } from "../utils/user.js";
+import {
+  displayPlayersInRoom,
+  renderRoomStatus,
+  renderWord,
+} from "../eventListeners/handleRoom.js";
 import { roomId } from "../pages/rooms/[id]/index.js";
+import { getProfile } from "../api/authentication.js";
 
-export let gameState = "waiting";
+export let roomInfo = {};
 
-export const setGameState = (state) => {
-  gameState = state;
+export let isDrawer = false;
 
-  if (gameState === "playing") {
-    document.querySelector("#waiting-container").style.display = "none";
-  } else if (gameState === "waiting") {
-    document.querySelector("#waiting-container").style.display = "block";
-    document.querySelector("#submit-word-form").style.display = "none";
-    document.querySelector("#draw-word-container").style.display = "none";
-  }
+export const setRoomInfo = (info) => {
+  roomInfo = info;
+  console.log(info);
 };
 
-let newDrawing = [];
+export const setDrawer = (drawer) => {
+  isDrawer = drawer;
+};
 
 export const initializeGame = (roomId) => {
   const drawLog = [];
+  let newDrawing = [];
+
+  const sse = new EventSource(`${BACKEND_URL}/room/${roomId}/subscribe`);
+
+  sse.onmessage = async (e) => {
+    const streamData = JSON.parse(e.data);
+
+    switch (streamData.type) {
+      case "status":
+        const playerList = streamData.data.playerList;
+        displayPlayersInRoom(playerList);
+
+        // Word Management
+        const rounds = streamData.data.rounds;
+
+        if (rounds.length == 0) return;
+        const lastRound = rounds[rounds.length - 1];
+
+        setDrawer(lastRound.drawer.username === (await getProfile()).username);
+
+        // Add Word to DOM
+        if (isDrawer) {
+          renderWord(lastRound.word.word);
+        }
+
+        // Render From Game State
+        const status = streamData.data.status;
+        renderRoomStatus(status, isDrawer);
+
+        break;
+      case "draw":
+        newDrawing = streamData.data;
+        break;
+      default:
+    }
+  };
+
+  sse.onerror = () => {
+    sse.close();
+  };
+
   class Game {
     constructor(config = {}) {
       this.phaserConfig = {
@@ -53,7 +94,7 @@ export const initializeGame = (roomId) => {
       this.graphics.lineStyle(4, 0x000000);
     }
     async updateScene() {
-      if (isDrawer(roomId)) {
+      if (isDrawer) {
         if (!this.input.activePointer.isDown && this.isDrawing) {
           this.isDrawing = false;
           drawing(roomId, drawLog);
@@ -63,27 +104,24 @@ export const initializeGame = (roomId) => {
               this.input.activePointer.position.x,
               this.input.activePointer.position.y
             );
-
             drawLog.push({
               type: "start",
               x: this.input.activePointer.position.x,
               y: this.input.activePointer.position.y,
             });
-
             this.isDrawing = true;
           } else {
             this.path.lineTo(
               this.input.activePointer.position.x,
               this.input.activePointer.position.y
             );
-
             drawLog.push({
               type: "continue",
               x: this.input.activePointer.position.x,
               y: this.input.activePointer.position.y,
             });
           }
-          console.log(this.graphics);
+
           this.path.draw(this.graphics);
         }
       } else {
@@ -96,6 +134,7 @@ export const initializeGame = (roomId) => {
               this.path.draw(this.game.scene.scenes[0].graphics);
             }
           });
+
           newDrawing = [];
         }
       }
@@ -105,35 +144,33 @@ export const initializeGame = (roomId) => {
     async joinOrCreateGame(id) {}
     async joinGame(id, authId) {}
     async createGame(id, authId) {
-      const board = document.querySelector("#game");
+      // const board = document.querySelector("#game");
       this.game = new Phaser.Game(this.phaserConfig);
-      setTimeout(() => {
-        board.appendChild(this.game.canvas);
-      }, 1000);
+      // setTimeout(() => {
+      //   board.appendChild(this.game.canvas);
+      // }, 1000);
 
-      const sse = new EventSource(`${BACKEND_URL}/room/${roomId}/subscribe`);
+      // sse.onmessage = (e) => {
+      //   // const streamData = JSON.parse(e.data);
+      //   // if (streamData.type === "draw" && !isDrawer(roomId)) {
+      //   //   newDrawing = streamData.data;
+      //   // } else if (streamData.type === "word" && !isDrawer(roomId)) {
+      //   //   setWord(streamData.data);
+      //   // } else if (streamData.type === "join") {
+      //   //   // console.log(streamData.data);
+      //   //   displayPlayersInRoom(streamData.data);
+      //   // } else if (streamData.type === "status") {
+      //   //   setGameState(streamData.data);
+      //   // } else if (streamData.type === "round") {
+      //   //   setDrawer(streamData.data.drawer.username);
+      //   //   setWord(streamData.data.word);
+      //   //   console.log(streamData.data);
+      //   // }
+      // };
 
-      sse.onmessage = (e) => {
-        const streamData = JSON.parse(e.data);
-        if (streamData.type === "draw" && !isDrawer(roomId)) {
-          newDrawing = streamData.data;
-        } else if (streamData.type === "word" && !isDrawer(roomId)) {
-          setWord(streamData.data);
-        } else if (streamData.type === "join") {
-          // console.log(streamData.data);
-          displayPlayersInRoom(streamData.data);
-        } else if (streamData.type === "status") {
-          setGameState(streamData.data);
-        } else if (streamData.type === "round") {
-          setDrawer(streamData.data.drawer.username);
-          setWord(streamData.data.word);
-          console.log(streamData.data);
-        }
-      };
-
-      sse.onerror = () => {
-        sse.close();
-      };
+      // sse.onerror = () => {
+      //   sse.close();
+      // };
     }
   }
 
