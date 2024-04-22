@@ -11,11 +11,20 @@ import { getProfile } from "../../../api/authentication.js";
 export const roomId = window.location.pathname.split("/").pop();
 
 checkAuth();
-handleQuitRoom();
-
 initializeGame(roomId);
 renderRoomStatus("waiting");
 
+// Event listeners
+document.querySelector("#quit-room").addEventListener("click", async (e) => {
+  e.preventDefault();
+  await handleQuitRoom(roomId);
+});
+document
+  .querySelector("#quit-gameover")
+  .addEventListener("click", async (e) => {
+    e.preventDefault();
+    await handleQuitRoom(roomId);
+  });
 document
   .querySelector("#submit-word-form")
   .addEventListener("submit", async (e) => {
