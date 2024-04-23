@@ -33,6 +33,10 @@ export const initializeGame = (roomId) => {
   sse.onmessage = async (e) => {
     const streamData = JSON.parse(e.data);
 
+    const gameContainer = document.getElementById("game-frame-container");
+    document.getElementById("game-frame-container").style.height =
+      gameContainer.offsetHeight + 1 + "px";
+
     switch (streamData.type) {
       case "status":
         const playerList = streamData.data.playerList;
@@ -110,7 +114,7 @@ export const initializeGame = (roomId) => {
           mode: Phaser.Scale.FIT,
           autoCenter: Phaser.Scale.CENTER_BOTH,
         },
-        backgroundColor: "ffffff",
+        backgroundColor: "f1f1f1",
         scene: {
           key: "default",
           init: this.initScene,
@@ -180,11 +184,7 @@ export const initializeGame = (roomId) => {
     async joinOrCreateGame(id) {}
     async joinGame(id, authId) {}
     async createGame(id, authId) {
-      // const board = document.querySelector("#game");
       this.game = new Phaser.Game(this.phaserConfig);
-      // setTimeout(() => {
-      //   board.appendChild(this.game.canvas);
-      // }, 1000);
     }
   }
 
