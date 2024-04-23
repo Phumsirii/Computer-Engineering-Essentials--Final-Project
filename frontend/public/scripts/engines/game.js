@@ -27,6 +27,100 @@ export const initializeGame = (roomId) => {
   let drawLog = [];
   let newDrawing = [];
   let currentRound = -1;
+  let clearCanvas = false;
+
+  class Game {
+    constructor(config = {}) {
+      this.phaserConfig = {
+        type: Phaser.AUTO,
+        parent: config.id ? config.id : "game",
+        width: config.width ? config.width : 1280,
+        height: config.height ? config.height : 720,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+        },
+        backgroundColor: "f1f1f1",
+        scene: {
+          key: "default",
+          init: this.initScene,
+          create: this.createScene,
+          update: this.updateScene,
+        },
+      };
+    }
+
+    async initScene(data) {
+      this.strokes = [];
+      this.isDrawing = false;
+    }
+    async createScene() {
+      this.graphics = this.add.graphics();
+      this.graphics.lineStyle(4, 0x000000);
+    }
+    async updateScene() {
+      if (clearCanvas) {
+        this.graphics.clear();
+        clearCanvas = false;
+      }
+
+      if (isDrawer) {
+        if (!this.input.activePointer.isDown && this.isDrawing) {
+          this.isDrawing = false;
+          drawing(roomId, drawLog);
+          drawLog = [];
+        } else if (this.input.activePointer.isDown) {
+          if (!this.isDrawing) {
+            this.path = new Phaser.Curves.Path(
+              this.input.activePointer.position.x,
+              this.input.activePointer.position.y
+            );
+            drawLog.push({
+              type: "start",
+              x: this.input.activePointer.position.x,
+              y: this.input.activePointer.position.y,
+            });
+            this.isDrawing = true;
+          } else {
+            this.path.lineTo(
+              this.input.activePointer.position.x,
+              this.input.activePointer.position.y
+            );
+            drawLog.push({
+              type: "continue",
+              x: this.input.activePointer.position.x,
+              y: this.input.activePointer.position.y,
+            });
+          }
+
+          this.path.draw(this.graphics);
+        }
+      } else {
+        if (newDrawing.length > 0) {
+          newDrawing.forEach((drawing) => {
+            if (drawing.type === "start") {
+              this.path = new Phaser.Curves.Path(drawing.x, drawing.y);
+            } else if (drawing.type === "continue") {
+              this.path.lineTo(drawing.x, drawing.y);
+              this.path.draw(this.game.scene.scenes[0].graphics);
+            }
+          });
+
+          newDrawing = [];
+        }
+      }
+    }
+
+    async authenticate() {}
+    async joinOrCreateGame(id) {}
+    async joinGame(id, authId) {}
+    async createGame(id, authId) {
+      this.game = new Phaser.Game(this.phaserConfig);
+    }
+  }
+
+  const game = new Game();
+  game.createGame();
 
   const sse = new EventSource(`${BACKEND_URL}/room/${roomId}/subscribe`);
 
@@ -92,8 +186,9 @@ export const initializeGame = (roomId) => {
         newDrawing = streamData.data;
         break;
       case "clear":
-        const scene = game.game.scene.scenes[0];
-        scene.graphics.clear();
+        clearCanvas = true;
+        drawLog = [];
+        newDrawing = [];
         break;
       default:
     }
@@ -102,92 +197,4 @@ export const initializeGame = (roomId) => {
   sse.onerror = () => {
     sse.close();
   };
-
-  class Game {
-    constructor(config = {}) {
-      this.phaserConfig = {
-        type: Phaser.AUTO,
-        parent: config.id ? config.id : "game",
-        width: config.width ? config.width : 1280,
-        height: config.height ? config.height : 720,
-        scale: {
-          mode: Phaser.Scale.FIT,
-          autoCenter: Phaser.Scale.CENTER_BOTH,
-        },
-        backgroundColor: "f1f1f1",
-        scene: {
-          key: "default",
-          init: this.initScene,
-          create: this.createScene,
-          update: this.updateScene,
-        },
-      };
-    }
-
-    async initScene(data) {
-      this.strokes = [];
-      this.isDrawing = false;
-    }
-    async createScene() {
-      this.graphics = this.add.graphics();
-      this.graphics.lineStyle(4, 0x000000);
-    }
-    async updateScene() {
-      if (isDrawer) {
-        if (!this.input.activePointer.isDown && this.isDrawing) {
-          this.isDrawing = false;
-          drawing(roomId, drawLog);
-          drawLog = [];
-        } else if (this.input.activePointer.isDown) {
-          if (!this.isDrawing) {
-            this.path = new Phaser.Curves.Path(
-              this.input.activePointer.position.x,
-              this.input.activePointer.position.y
-            );
-            drawLog.push({
-              type: "start",
-              x: this.input.activePointer.position.x,
-              y: this.input.activePointer.position.y,
-            });
-            this.isDrawing = true;
-          } else {
-            this.path.lineTo(
-              this.input.activePointer.position.x,
-              this.input.activePointer.position.y
-            );
-            drawLog.push({
-              type: "continue",
-              x: this.input.activePointer.position.x,
-              y: this.input.activePointer.position.y,
-            });
-          }
-
-          this.path.draw(this.graphics);
-        }
-      } else {
-        if (newDrawing.length > 0) {
-          newDrawing.forEach((drawing) => {
-            if (drawing.type === "start") {
-              this.path = new Phaser.Curves.Path(drawing.x, drawing.y);
-            } else if (drawing.type === "continue") {
-              this.path.lineTo(drawing.x, drawing.y);
-              this.path.draw(this.game.scene.scenes[0].graphics);
-            }
-          });
-
-          newDrawing = [];
-        }
-      }
-    }
-
-    async authenticate() {}
-    async joinOrCreateGame(id) {}
-    async joinGame(id, authId) {}
-    async createGame(id, authId) {
-      this.game = new Phaser.Game(this.phaserConfig);
-    }
-  }
-
-  const game = new Game();
-  game.createGame();
 };
