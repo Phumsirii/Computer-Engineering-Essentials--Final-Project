@@ -175,7 +175,8 @@ export const displayPlayersInRoom = (playerList) => {
       "flex",
       "flex-row",
       "items-center",
-      "gap-8",
+      "gap-x-2",
+      "lg:gap-8",
       "bg-white/25",
       "rounded-2xl",
       "p-2"
@@ -184,12 +185,15 @@ export const displayPlayersInRoom = (playerList) => {
     const playerImage = document.createElement("img");
     playerImage.src = "/assets/Ricardo_Milos.jpg";
     playerImage.classList.add(
-      "w-20",
-      "h-20",
+      "w-10",
+      "h-10",
+      "lg:w-20",
+      "lg:h-20",
       "aspect-square",
       "object-cover",
       "rounded-full",
-      "border-4",
+      "border-2",
+      "lg:border-4",
       "border-gatuk"
     );
     playerImage.alt = "profile";
