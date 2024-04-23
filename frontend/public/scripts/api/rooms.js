@@ -46,7 +46,7 @@ export const quitRoom = async (roomId, userId) => {
 };
 
 export const createRoom = async (roomName) => {
-  const response = await fetch("http://localhost:3000/room", {
+  const response = await fetch(`${BACKEND_URL}/room`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

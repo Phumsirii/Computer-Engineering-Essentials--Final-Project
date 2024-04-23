@@ -1,5 +1,4 @@
 import { quitRoom } from "../api/rooms.js";
-import { getUsers } from "../api/game.js";
 import { getProfile } from "../api/authentication.js";
 
 export const handleQuitRoom = async (roomId) => {
