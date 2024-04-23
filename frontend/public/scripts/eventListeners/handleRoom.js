@@ -89,7 +89,7 @@ export const displayRooms = async () => {
     roomInfo.classList.add(
       "flex",
       "flex-col",
-      "lg:flex-row",
+      "md:flex-row",
       "items-center",
       "bg-gatuk",
       "justify-between",
@@ -100,10 +100,10 @@ export const displayRooms = async () => {
     const roomInfoDetails = document.createElement("div");
     roomInfoDetails.classList.add(
       "room-info",
-      "lg:items-end",
+      "md:items-end",
       "gatuk-heading-subtitle",
       "text-center",
-      "lg:text-left"
+      "md:text-left"
     );
 
     const roomName = document.createElement("h3");
