@@ -88,7 +88,8 @@ export const displayRooms = async () => {
     const roomInfo = document.createElement("div");
     roomInfo.classList.add(
       "flex",
-      "flex-row",
+      "flex-col",
+      "lg:flex-row",
       "items-center",
       "bg-gatuk",
       "justify-between",
@@ -99,8 +100,10 @@ export const displayRooms = async () => {
     const roomInfoDetails = document.createElement("div");
     roomInfoDetails.classList.add(
       "room-info",
-      "items-end",
-      "gatuk-heading-subtitle"
+      "lg:items-end",
+      "gatuk-heading-subtitle",
+      "text-center",
+      "lg:text-left"
     );
 
     const roomName = document.createElement("h3");
@@ -124,7 +127,8 @@ export const displayRooms = async () => {
     joinButton.classList.add(
       "gatuk-button-form",
       "rounded-lg",
-      "px-12",
+      "px-2",
+      "lg:px-12",
       "py-1",
       "font-semibold",
       "text-lg"
