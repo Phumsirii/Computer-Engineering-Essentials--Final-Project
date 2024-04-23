@@ -3,9 +3,9 @@ const mongoose = require("mongoose");
 
 const getWord = async (req, res) => {
   try {
-    const randomWord = await Word.aggregate([{ $sample: { size: 1 } }]);
+    const words = await Word.find();
 
-    res.status(200).json({ success: true, data: randomWord });
+    res.status(200).json({ success: true, data: words });
   } catch (err) {
     console.log(err);
 

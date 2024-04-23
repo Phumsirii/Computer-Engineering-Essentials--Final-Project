@@ -10,3 +10,13 @@ export const createWord = async (word) => {
   });
   return response.json();
 };
+
+export const getWord = async () => {
+  const response = await fetch(`${BACKEND_URL}/word`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.json();
+};
