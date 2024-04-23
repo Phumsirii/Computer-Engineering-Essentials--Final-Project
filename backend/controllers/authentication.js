@@ -37,7 +37,7 @@ exports.login = async (req, res, next) => {
       return res.status(400).json({status: "error",data: { message: "wrong username or password" },});
     }
     //check for user
-    const user = await User.findOne({ username }).select("+password").select("+salt");
+    const user = await User.findOne({ username }).select("+password");
     if (!user) {
       return res.status(400).json({status: "error",data: { message: "wrong username or password" },});
     }

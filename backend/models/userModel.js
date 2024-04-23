@@ -12,6 +12,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please add a password"],
     minlength: 6,
+    select:false
   },
   points: {
     type: Number,
@@ -23,21 +24,22 @@ const UserSchema = new mongoose.Schema({
       result: { type: String, enum: ["Won", "Lost"] },
     },
   ],
-  salt: String,
 });
+
+const salt = "Phumsiri";
 
 //hash and salt password
 UserSchema.pre("save", async function (next) {
-  this.salt = "Phumsiri";
+  
   this.password = crypto
-    .pbkdf2Sync(this.password, this.salt, 1000, 64, `sha512`)
+    .pbkdf2Sync(this.password, salt, 1000, 64, `sha512`)
     .toString(`hex`);
 });
 
 //check password
 UserSchema.methods.validPassword = function (pw) {
   var hash = crypto
-    .pbkdf2Sync(pw, this.salt, 1000, 64, `sha512`)
+    .pbkdf2Sync(pw, salt, 1000, 64, `sha512`)
     .toString(`hex`);
   return this.password === hash;
 };
