@@ -131,10 +131,6 @@ export const initializeGame = (roomId) => {
   sse.onmessage = async (e) => {
     const streamData = JSON.parse(e.data);
 
-    const gameContainer = document.getElementById("game-frame-container");
-    document.getElementById("game-frame-container").style.height =
-      gameContainer.offsetHeight + 1 + "px";
-
     switch (streamData.type) {
       case "status":
         const playerList = streamData.data.playerList;
@@ -149,6 +145,11 @@ export const initializeGame = (roomId) => {
         if (rounds.length == 0) return;
         if (currentRound != rounds.length - 1) {
           currentRound = rounds.length - 1;
+
+          const gameContainer = document.getElementById("game-frame-container");
+          document.getElementById("game-frame-container").style.height =
+            gameContainer.offsetHeight + 1 + "px";
+
           if (currentRound != -1 && status !== "gameover") {
             document.querySelector("#start-newround-modal").style.display =
               "block";
