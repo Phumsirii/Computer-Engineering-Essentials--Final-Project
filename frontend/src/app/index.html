@@ -7,20 +7,26 @@
     <link rel="stylesheet" href="/css/gatuk.css" />
     <link rel="stylesheet" href="/css/stylesheets.css" />
   </head>
-  <body class="bg-gatuk min-h-screen flex flex-col justify-center items-center">
-    <div class="home-container rounded-2xl shadow-lg py-8 px-12 space-y-16">
+  <body
+    class="bg-gatuk min-h-screen flex flex-col justify-center items-center py-12"
+  >
+    <div
+      class="home-container rounded-2xl shadow-lg p-4 md:py-8 md:px-12 space-y-6 md:space-y-12"
+    >
       <div class="flex flex-col justify-center items-center">
         <img src="/assets/gartuk.png" class="h-12" alt="" />
       </div>
-      <div class="grid grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div
-          class="col-span-2 bg-black/25 rounded-lg text-white space-y-8 p-4 pb-8 shadow-lg"
+          class="lg:col-span-2 bg-black/25 rounded-lg text-white space-y-8 p-4 pb-8 shadow-lg"
         >
           <div class="space-y-2">
             <h2 class="gatuk-heading-subtitle text-2xl text-center">
               Authentication
             </h2>
-            <div class="flex flex-row justify-center items-center gap-8">
+            <div
+              class="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-8"
+            >
               <button
                 type="button"
                 id="open-login-form"
@@ -38,23 +44,21 @@
             </div>
           </div>
           <form id="login-form" class="space-y-8" style="display: none">
-            <div class="grid grid-cols-5 gap-8">
-              <div class="col-span-2 flex flex-col justify-center items-center">
+            <div class="flex flex-col md:flex-row justify-center gap-8">
+              <div class="flex flex-col justify-center items-center">
                 <img
                   src="/assets/Ricardo_Milos.jpg"
                   class="w-40 h-40 object-cover rounded-full border-4 border-white"
                   alt="profile"
                 />
               </div>
-              <div
-                class="col-span-3 space-y-4 flex flex-col justify-center items-center"
-              >
+              <div class="space-y-4 flex flex-col justify-center items-center">
                 <div>
                   <input
                     type="text"
                     id="login-username"
                     placeholder="Username"
-                    class="gatuk-input-form px-4 rounded-lg text-lg outline-none"
+                    class="gatuk-input-form px-4 rounded-lg text-lg outline-none w-full"
                   />
                 </div>
                 <div>
@@ -62,7 +66,7 @@
                     type="password"
                     id="login-password"
                     placeholder="Password"
-                    class="gatuk-input-form px-4 rounded-lg text-lg outline-none"
+                    class="gatuk-input-form px-4 rounded-lg text-lg outline-none w-full"
                   />
                 </div>
               </div>
@@ -77,16 +81,14 @@
             </div>
           </form>
           <form id="register-form" class="space-y-8" style="display: none">
-            <div class="grid grid-cols-5 gap-8">
-              <div
-                class="col-span-3 space-y-4 flex flex-col justify-center items-center"
-              >
+            <div class="flex flex-col-reverse md:flex-row justify-center gap-8">
+              <div class="space-y-4 flex flex-col justify-center items-center">
                 <div>
                   <input
                     type="text"
                     id="register-username"
                     placeholder="Username"
-                    class="gatuk-input-form px-4 rounded-lg text-lg outline-none"
+                    class="gatuk-input-form px-4 rounded-lg text-lg outline-none w-full"
                   />
                 </div>
                 <div>
@@ -94,11 +96,11 @@
                     type="password"
                     id="register-password"
                     placeholder="Password"
-                    class="gatuk-input-form px-4 rounded-lg text-lg outline-none"
+                    class="gatuk-input-form px-4 rounded-lg text-lg outline-none w-full"
                   />
                 </div>
               </div>
-              <div class="col-span-2 flex flex-col justify-center items-center">
+              <div class="flex flex-col justify-center items-center">
                 <img
                   src="/assets/Ricardo_Christmas.jpeg"
                   class="w-40 h-40 object-cover rounded-full border-4 border-white"
