@@ -280,7 +280,6 @@ export const renderPlayerScoreSummary = (playerList) => {
       "flex-row",
       "items-center",
       "gap-8",
-      "bg-white/25",
       "rounded-2xl",
       "p-2"
     );
