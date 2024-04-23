@@ -63,7 +63,6 @@ function displayWords(words) {
   wordContainer.innerHTML = "";
   wordsModal.appendChild(wordContainer);
   words.forEach((wordObject) => {
-    // console.log(wordObject.word);
     const temp = document.createElement("div");
     temp.classList.add("font-semibold", "text-md", "gartuk-word");
     temp.textContent = `- ${wordObject.word}`;
