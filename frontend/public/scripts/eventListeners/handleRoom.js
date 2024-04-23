@@ -315,12 +315,6 @@ export const renderStartButton = (playerCount, roomId) => {
   if (playerCount >= 2) {
     document.querySelector("#start-game-button").disabled = false;
     document.querySelector("#start-game-button").style.cursor = "pointer";
-    document
-      .querySelector("#start-game-button")
-      .addEventListener("click", () => {
-        console.log("Starting game");
-        startGame(roomId);
-      });
   } else {
     document.querySelector("#start-game-button").disabled = true;
     document.querySelector("#start-game-button").style.cursor = "not-allowed";

@@ -1,4 +1,4 @@
-import { drawing } from "../api/rooms.js";
+import { drawing, startGame } from "../api/rooms.js";
 import { BACKEND_URL } from "../config.js";
 import {
   displayPlayersInRoom,
@@ -28,6 +28,10 @@ export const initializeGame = (roomId) => {
   let newDrawing = [];
   let currentRound = -1;
   let clearCanvas = false;
+
+  document.querySelector("#start-game-button").addEventListener("click", () => {
+    startGame(roomId);
+  });
 
   class Game {
     constructor(config = {}) {
