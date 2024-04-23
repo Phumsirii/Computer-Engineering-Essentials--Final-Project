@@ -129,6 +129,12 @@ export const displayRooms = async () => {
       "font-semibold",
       "text-lg"
     );
+    if (room.status === "playing" || room.status === "gameover") {
+      roomInfo.classList.add("opacity-50");
+      joinButton.classList.add("cursor-not-allowed");
+      document.querySelector("#join-button").disabled = true;
+    }
+
     joinButton.textContent = "join";
     joinButton.onclick = async () => {
       console.log(`Joining room ${room._id}`);
