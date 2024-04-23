@@ -1,12 +1,42 @@
 const { broadcast } = require("../utils/sse");
 const Room = require("../models/roomModel");
 const Word = require("../models/wordModel");
+const User = require("../models/userModel");
 
 const subscribers = {};
 
-const subscribeChat = async (req, res) => {
-  const roomId = req.params.id;
+// Utils
+const clearBoard = async (roomId) => {
+  const response = {
+    type: "clear",
+    data: true,
+  };
+  if (subscribers[roomId]) broadcast(subscribers[roomId], response);
+};
 
+const startNewRound = async (roomId) => {
+  const roomInfo = await Room.findById(roomId);
+  roomInfo.status = "playing";
+
+  const word = await Word.aggregate([
+    { $match: { _id: { $nin: roomInfo.rounds.map((round) => round.word) } } },
+    { $sample: { size: 1 } },
+  ]);
+
+  roomInfo.rounds.push({
+    drawer:
+      roomInfo.playerList[roomInfo.rounds.length % roomInfo.playerList.length]
+        .user._id,
+    word: word[0]._id,
+  });
+
+  await roomInfo.save();
+
+  clearBoard(roomId);
+  sendRoomInfo(roomId);
+};
+
+const sendRoomInfo = async (roomId) => {
   const roomInfo = await Room.findById(roomId).populate([
     {
       path: "playerList.user",
@@ -21,14 +51,29 @@ const subscribeChat = async (req, res) => {
       model: "Word",
     },
   ]);
+
+  const response = {
+    type: "status",
+    data: roomInfo,
+  };
+
+  if (subscribers[roomId]) {
+    broadcast(subscribers[roomId], response);
+  }
+};
+
+// API
+const subscribeChat = async (req, res) => {
+  const roomId = req.params.id;
+
+  // Check does room valid
+  const roomInfo = await Room.findById(roomId);
   if (roomInfo == null) {
     return res.status(400).json({ success: false, msg: "Room not found" });
   }
 
-  if (!subscribers[roomId]) {
-    subscribers[roomId] = [];
-  }
-
+  // Store subscriber
+  if (!subscribers[roomId]) subscribers[roomId] = [];
   subscribers[roomId].push(res);
 
   const headers = {
@@ -38,64 +83,7 @@ const subscribeChat = async (req, res) => {
   };
   res.writeHead(200, headers);
 
-  // Initialize Room Info
-  if (roomInfo.status == "waiting") {
-    if (roomInfo.playerList.length < 2) {
-      const response = {
-        type: "status",
-        data: roomInfo,
-      };
-
-      if (subscribers[roomId]) {
-        broadcast(subscribers[roomId], response);
-      }
-    } else {
-      const word = await Word.aggregate([{ $sample: { size: 1 } }]);
-
-      // Change status to playing
-      roomInfo.status = "playing";
-
-      // Add round
-      roomInfo.rounds.push({
-        drawer: roomInfo.playerList[0].user._id,
-        word: word[0]._id,
-      });
-      await roomInfo.save();
-
-      await roomInfo.populate([
-        {
-          path: "playerList.user",
-          model: "User",
-        },
-        {
-          path: "rounds.drawer",
-          model: "User",
-        },
-        {
-          path: "rounds.word",
-          model: "Word",
-        },
-      ]);
-
-      const response = {
-        type: "status",
-        data: roomInfo,
-      };
-
-      if (subscribers[roomId]) {
-        broadcast(subscribers[roomId], response);
-      }
-    }
-  } else if (roomInfo.status == "playing") {
-    const response = {
-      type: "status",
-      data: roomInfo,
-    };
-
-    if (subscribers[roomId]) {
-      broadcast(subscribers[roomId], response);
-    }
-  }
+  sendRoomInfo(roomId);
 
   req.on("close", () => {
     res.end();
@@ -112,22 +100,21 @@ const postDraw = async (req, res) => {
   };
   if (subscribers[roomId]) broadcast(subscribers[roomId], response);
 
-  res.status(200).send("Draw posted");
+  res.status(200).send({
+    success: true,
+    msg: "Drawing posted",
+  });
 };
 
 const guessDraw = async (req, res) => {
   const roomId = req.params.id;
-  const { answer } = req.body;
+  const { answer, userId } = req.body;
+
+  if (!answer || !userId) {
+    return res.status(400).json({ success: false, msg: "Invalid request" });
+  }
 
   const roomInfo = await Room.findById(roomId).populate([
-    {
-      path: "playerList.user",
-      model: "User",
-    },
-    {
-      path: "rounds.drawer",
-      model: "User",
-    },
     {
       path: "rounds.word",
       model: "Word",
@@ -139,8 +126,101 @@ const guessDraw = async (req, res) => {
   }
 
   const currentRound = roomInfo.rounds[roomInfo.rounds.length - 1];
+  if (currentRound.word.word.toLowerCase() == answer.toLowerCase()) {
+    // Update score to Drawer
+    const drawerIndex = roomInfo.playerList.findIndex(
+      (player) => player.user.toString() == currentRound.drawer.toString()
+    );
+    roomInfo.playerList[drawerIndex].score +=
+      100 / (roomInfo.playerList.length - 1);
 
-  res.status(200).send("Guess posted");
+    // Update score to Guesser
+    const guesserIndex = roomInfo.playerList.findIndex(
+      (player) => player.user.toString() == userId
+    );
+    roomInfo.playerList[guesserIndex].score += 100;
+  }
+
+  // Add to guesses
+  currentRound.guesses.push({ player: userId, guess: answer });
+
+  await roomInfo.save();
+
+  if (currentRound.guesses.length == roomInfo.playerList.length - 1) {
+    // game will over when roundes.length == playerList.length
+    if (roomInfo.rounds.length == roomInfo.playerList.length) {
+      roomInfo.status = "gameover";
+      await roomInfo.save();
+
+      const maxscore = Math.max(
+        ...roomInfo.playerList.map((player) => player.score)
+      );
+
+      const winners = roomInfo.playerList.filter(
+        (player) => player.score === maxscore
+      );
+
+      const loser = roomInfo.playerList.filter(
+        (player) => player.score !== maxscore
+      );
+
+      winners.forEach(async (player) => {
+        const userInfo = await User.findById(player.user);
+        userInfo.played.push({ roomId: roomInfo._id, result: "Won" });
+        if (winners.length > 1) {
+          userInfo.points++;
+        } else {
+          userInfo.points += 3;
+        }
+        await userInfo.save();
+      });
+
+      loser.forEach(async (player) => {
+        const userInfo = await User.findById(player.user);
+        userInfo.played.push({ roomId: roomInfo._id, result: "Lost" });
+        await userInfo.save();
+      });
+
+      sendRoomInfo(roomId);
+    } else {
+      currentRound.status = "ended";
+      await roomInfo.save();
+      startNewRound(roomId);
+    }
+  } else {
+    sendRoomInfo(roomId);
+  }
+
+  res.status(200).send({
+    success: true,
+    msg: "Guess posted",
+  });
+};
+
+const playGame = async (req, res) => {
+  const roomId = req.params.id;
+  const roomInfo = await Room.findById(roomId);
+
+  if (roomInfo == null) {
+    return res.status(400).json({ success: false, msg: "Room not found" });
+  }
+
+  if (roomInfo.status == "playing") {
+    return res
+      .status(400)
+      .json({ success: false, msg: "Game already started" });
+  }
+
+  if (roomInfo.status == "gameover") {
+    return res.status(400).json({ success: false, msg: "Game already over" });
+  }
+
+  if (roomInfo.playerList.length < 2) {
+    return res.status(400).json({ success: false, msg: "Not enough players" });
+  }
+
+  startNewRound(roomId);
+  res.status(200).json({ success: true, msg: "Game started" });
 };
 
 const createRoom = async (req, res) => {
@@ -222,9 +302,22 @@ const joinRoom = async (req, res) => {
         .status(400)
         .json({ success: false, msg: "This room is already full." });
     }
-    // console.log(req.body);
+    if (room.status === "playing") {
+      return res
+        .status(400)
+        .json({ success: false, msg: "This room is already playing." });
+    }
+    if (room.status === "gameover") {
+      return res
+        .status(400)
+        .json({ success: false, msg: "This game is already over." });
+    }
+
     const newplayer = req.body.userId;
-    if (room.playerList.indexOf(newplayer) !== -1) {
+    if (
+      room.playerList.filter((player) => player.user.toString() === newplayer)
+        .length > 0
+    ) {
       return res
         .status(400)
         .json({ success: false, msg: "Player is already in the room." });
@@ -250,7 +343,13 @@ const quitRoom = async (req, res) => {
         .json({ success: false, msg: "Cannot find the room." });
     }
     const leavingplayer = req.body.userId;
-    // change to new schema
+
+    if (room.status === "playing") {
+      return res
+        .status(400)
+        .json({ success: false, msg: "Cannot leave while playing." });
+    }
+
     const leavingplayerIndex = room.playerList.findIndex(
       (player) => player.user == leavingplayer
     );
@@ -307,4 +406,5 @@ module.exports = {
   deleteRoom,
   joinRoom,
   quitRoom,
+  playGame,
 };

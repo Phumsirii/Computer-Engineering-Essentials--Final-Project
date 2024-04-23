@@ -1,9 +1,12 @@
-import { drawing } from "../api/rooms.js";
+import { drawing, startGame } from "../api/rooms.js";
 import { BACKEND_URL } from "../config.js";
 import {
   displayPlayersInRoom,
   renderRoomStatus,
   renderWord,
+  renderPlayerScoreSummary,
+  renderGuessedWord,
+  renderStartButton,
 } from "../eventListeners/handleRoom.js";
 import { roomId } from "../pages/rooms/[id]/index.js";
 import { getProfile } from "../api/authentication.js";
@@ -14,7 +17,6 @@ export let isDrawer = false;
 
 export const setRoomInfo = (info) => {
   roomInfo = info;
-  console.log(info);
 };
 
 export const setDrawer = (drawer) => {
@@ -22,47 +24,14 @@ export const setDrawer = (drawer) => {
 };
 
 export const initializeGame = (roomId) => {
-  const drawLog = [];
+  let drawLog = [];
   let newDrawing = [];
+  let currentRound = -1;
+  let clearCanvas = false;
 
-  const sse = new EventSource(`${BACKEND_URL}/room/${roomId}/subscribe`);
-
-  sse.onmessage = async (e) => {
-    const streamData = JSON.parse(e.data);
-
-    switch (streamData.type) {
-      case "status":
-        const playerList = streamData.data.playerList;
-        displayPlayersInRoom(playerList);
-
-        // Word Management
-        const rounds = streamData.data.rounds;
-
-        if (rounds.length == 0) return;
-        const lastRound = rounds[rounds.length - 1];
-
-        setDrawer(lastRound.drawer.username === (await getProfile()).username);
-
-        // Add Word to DOM
-        if (isDrawer) {
-          renderWord(lastRound.word.word);
-        }
-
-        // Render From Game State
-        const status = streamData.data.status;
-        renderRoomStatus(status, isDrawer);
-
-        break;
-      case "draw":
-        newDrawing = streamData.data;
-        break;
-      default:
-    }
-  };
-
-  sse.onerror = () => {
-    sse.close();
-  };
+  document.querySelector("#start-game-button").addEventListener("click", () => {
+    startGame(roomId);
+  });
 
   class Game {
     constructor(config = {}) {
@@ -75,7 +44,7 @@ export const initializeGame = (roomId) => {
           mode: Phaser.Scale.FIT,
           autoCenter: Phaser.Scale.CENTER_BOTH,
         },
-        backgroundColor: "ffffff",
+        backgroundColor: "f1f1f1",
         scene: {
           key: "default",
           init: this.initScene,
@@ -94,10 +63,16 @@ export const initializeGame = (roomId) => {
       this.graphics.lineStyle(4, 0x000000);
     }
     async updateScene() {
+      if (clearCanvas) {
+        this.graphics.clear();
+        clearCanvas = false;
+      }
+
       if (isDrawer) {
         if (!this.input.activePointer.isDown && this.isDrawing) {
           this.isDrawing = false;
           drawing(roomId, drawLog);
+          drawLog = [];
         } else if (this.input.activePointer.isDown) {
           if (!this.isDrawing) {
             this.path = new Phaser.Curves.Path(
@@ -144,36 +119,87 @@ export const initializeGame = (roomId) => {
     async joinOrCreateGame(id) {}
     async joinGame(id, authId) {}
     async createGame(id, authId) {
-      // const board = document.querySelector("#game");
       this.game = new Phaser.Game(this.phaserConfig);
-      // setTimeout(() => {
-      //   board.appendChild(this.game.canvas);
-      // }, 1000);
-
-      // sse.onmessage = (e) => {
-      //   // const streamData = JSON.parse(e.data);
-      //   // if (streamData.type === "draw" && !isDrawer(roomId)) {
-      //   //   newDrawing = streamData.data;
-      //   // } else if (streamData.type === "word" && !isDrawer(roomId)) {
-      //   //   setWord(streamData.data);
-      //   // } else if (streamData.type === "join") {
-      //   //   // console.log(streamData.data);
-      //   //   displayPlayersInRoom(streamData.data);
-      //   // } else if (streamData.type === "status") {
-      //   //   setGameState(streamData.data);
-      //   // } else if (streamData.type === "round") {
-      //   //   setDrawer(streamData.data.drawer.username);
-      //   //   setWord(streamData.data.word);
-      //   //   console.log(streamData.data);
-      //   // }
-      // };
-
-      // sse.onerror = () => {
-      //   sse.close();
-      // };
     }
   }
 
   const game = new Game();
   game.createGame();
+
+  const sse = new EventSource(`${BACKEND_URL}/room/${roomId}/subscribe`);
+
+  sse.onmessage = async (e) => {
+    const streamData = JSON.parse(e.data);
+
+    switch (streamData.type) {
+      case "status":
+        const playerList = streamData.data.playerList;
+        displayPlayersInRoom(playerList);
+
+        // Word Management
+        const rounds = streamData.data.rounds;
+        const status = streamData.data.status;
+
+        if (status === "waiting") renderStartButton(playerList.length, roomId);
+
+        if (rounds.length == 0) return;
+        if (currentRound != rounds.length - 1) {
+          currentRound = rounds.length - 1;
+
+          const gameContainer = document.getElementById("game-frame-container");
+          document.getElementById("game-frame-container").style.height =
+            gameContainer.offsetHeight + 1 + "px";
+
+          if (currentRound != -1 && status !== "gameover") {
+            document.querySelector("#start-newround-modal").style.display =
+              "block";
+            setTimeout(() => {
+              document.querySelector("#start-newround-modal").style.display =
+                "none";
+            }, 1000);
+          }
+        }
+
+        const lastRound = rounds[rounds.length - 1];
+
+        setDrawer(lastRound.drawer.username === (await getProfile()).username);
+
+        // Add Word to DOM
+        if (isDrawer) {
+          renderWord(lastRound.word.word);
+        }
+
+        // Render From Game State
+        renderRoomStatus(status, isDrawer);
+        if (status === "gameover") renderPlayerScoreSummary(playerList);
+
+        // Render guessed words
+        const playerId = (await getProfile())._id;
+        const filteredGuessFromPlayer = lastRound.guesses.filter(
+          (guess) => guess.player === playerId
+        );
+        if (!isDrawer) {
+          if (filteredGuessFromPlayer.length > 0) {
+            renderGuessedWord(true, filteredGuessFromPlayer[0].guess);
+          } else {
+            renderGuessedWord(false, "");
+          }
+        }
+
+        break;
+      case "draw":
+        newDrawing = [...newDrawing, ...streamData.data];
+        break;
+      case "clear":
+        clearCanvas = true;
+        drawLog = [];
+        newDrawing = [];
+        break;
+      default:
+    }
+  };
+
+  sse.onerror = () => {
+    sse.close();
+  };
 };

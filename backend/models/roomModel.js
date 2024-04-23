@@ -5,6 +5,7 @@ const roomSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+
   status: {
     type: String,
     enum: ["waiting", "playing", "gameover"],
@@ -45,6 +46,10 @@ const roomSchema = new mongoose.Schema({
       ],
     },
   ],
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 module.exports = mongoose.model("Room", roomSchema);

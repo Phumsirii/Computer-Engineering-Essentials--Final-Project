@@ -1,5 +1,5 @@
 import { signout, getProfile } from "../api/authentication.js";
-import { getRooms, joinRoom, createRoom } from "../api/rooms.js";
+import { getRooms, joinRoom, createRoom, startGame } from "../api/rooms.js";
 
 export const handleLogout = () => {
   console.log("logout");
@@ -76,15 +76,20 @@ export const handleJoin = () => {
 
 export const displayRooms = async () => {
   const rooms = await getRooms();
-  rooms.data.forEach((room) => {
-    // console.log(room);
+
+  const sortedRooms = rooms.data.sort((a, b) => {
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
+
+  sortedRooms.forEach((room) => {
     const roomContainer = document.createElement("div");
     roomContainer.setAttribute("id", `room-${room._id}`);
 
     const roomInfo = document.createElement("div");
     roomInfo.classList.add(
       "flex",
-      "flex-row",
+      "flex-col",
+      "md:flex-row",
       "items-center",
       "bg-gatuk",
       "justify-between",
@@ -95,8 +100,10 @@ export const displayRooms = async () => {
     const roomInfoDetails = document.createElement("div");
     roomInfoDetails.classList.add(
       "room-info",
-      "items-end",
-      "gatuk-heading-subtitle"
+      "md:items-end",
+      "gatuk-heading-subtitle",
+      "text-center",
+      "md:text-left"
     );
 
     const roomName = document.createElement("h3");
@@ -120,11 +127,17 @@ export const displayRooms = async () => {
     joinButton.classList.add(
       "gatuk-button-form",
       "rounded-lg",
-      "px-12",
+      "px-2",
+      "lg:px-12",
       "py-1",
       "font-semibold",
       "text-lg"
     );
+    if (room.status === "playing" || room.status === "gameover") {
+      roomInfo.classList.add("opacity-50");
+      joinButton.classList.add("cursor-not-allowed", "hidden");
+    }
+
     joinButton.textContent = "join";
     joinButton.onclick = async () => {
       console.log(`Joining room ${room._id}`);
@@ -132,7 +145,7 @@ export const displayRooms = async () => {
       const user = await getProfile();
       const joined = await joinRoom(room._id, user._id);
       if (joined.success) window.location.href = `/rooms/${room._id}`;
-      else alert(joined.message);
+      else alert(joined.msg);
     };
 
     roomInfo.append(roomInfoDetails, joinButton);
@@ -162,7 +175,8 @@ export const displayPlayersInRoom = (playerList) => {
       "flex",
       "flex-row",
       "items-center",
-      "gap-8",
+      "gap-x-2",
+      "lg:gap-8",
       "bg-white/25",
       "rounded-2xl",
       "p-2"
@@ -171,12 +185,15 @@ export const displayPlayersInRoom = (playerList) => {
     const playerImage = document.createElement("img");
     playerImage.src = "/assets/Ricardo_Milos.jpg";
     playerImage.classList.add(
-      "w-20",
-      "h-20",
+      "w-10",
+      "h-10",
+      "lg:w-20",
+      "lg:h-20",
       "aspect-square",
       "object-cover",
       "rounded-full",
-      "border-4",
+      "border-2",
+      "lg:border-4",
       "border-gatuk"
     );
     playerImage.alt = "profile";
@@ -190,7 +207,7 @@ export const displayPlayersInRoom = (playerList) => {
 
     const playerScore = document.createElement("p");
     playerScore.classList.add("text-base");
-    playerScore.textContent = 100;
+    playerScore.textContent = player.score.toFixed(2);
 
     playerInfo.append(playerName, playerScore);
 
@@ -206,18 +223,104 @@ export const renderWord = (word) => {
 
 export const renderRoomStatus = (status, isDrawer) => {
   if (status === "waiting") {
+    document.querySelector("#guessed-word-container").style.display = "none";
     document.querySelector("#waiting-container").style.display = "block";
     document.querySelector("#submit-word-form").style.display = "none";
     document.querySelector("#draw-word-container").style.display = "none";
+    document.querySelector("#gameover-modal").style.display = "none";
   } else if (status === "playing") {
     if (isDrawer) {
-      document.querySelector("#waiting-container").style.display = "none";
       document.querySelector("#submit-word-form").style.display = "none";
       document.querySelector("#draw-word-container").style.display = "block";
     } else {
-      document.querySelector("#waiting-container").style.display = "none";
       document.querySelector("#submit-word-form").style.display = "block";
       document.querySelector("#draw-word-container").style.display = "none";
     }
+
+    document.querySelector("#guessed-word-container").style.display = "none";
+    document.querySelector("#waiting-container").style.display = "none";
+    document.querySelector("#gameover-modal").style.display = "none";
+  } else if (status === "gameover") {
+    document.querySelector("#guessed-word-container").style.display = "none";
+    document.querySelector("#waiting-container").style.display = "none";
+    document.querySelector("#submit-word-form").style.display = "none";
+    document.querySelector("#draw-word-container").style.display = "none";
+    document.querySelector("#gameover-modal").style.display = "block";
+  }
+};
+
+export const renderGuessedWord = (isGuess, word) => {
+  if (isGuess) {
+    document.querySelector("#guessed-word").textContent = word;
+    document.querySelector("#guessed-word-container").style.display = "block";
+    document.querySelector("#submit-word-form").style.display = "none";
+  } else {
+    document.querySelector("#guessed-word-container").style.display = "none";
+    document.querySelector("#submit-word-form").style.display = "block";
+  }
+};
+
+export const renderPlayerScoreSummary = (playerList) => {
+  // TODO: Aungpao add the player score summary here at gameover modal
+  document.querySelector("#ranking-container").innerHTML = "";
+  playerList.forEach((player) => {
+    const userResult = document.createElement("div");
+    userResult.classList.add(
+      "flex",
+      "flex-row",
+      "justify-between",
+      "items-center",
+      "bg-blue-200",
+      "rounded-2xl",
+      "p-2"
+    );
+    const info = document.createElement("div");
+    info.classList.add(
+      "flex",
+      "flex-row",
+      "items-center",
+      "gap-8",
+      "bg-white/25",
+      "rounded-2xl",
+      "p-2"
+    );
+    const profile = document.createElement("img");
+    profile.src = "/assets/Ricardo_Milos.jpg";
+    profile.classList.add(
+      "w-16",
+      "h-16",
+      "aspect-square",
+      "object-cover",
+      "rounded-full",
+      "border-4",
+      "border-gatuk"
+    );
+    info.appendChild(profile);
+    const userInfo = document.createElement("div");
+    userInfo.classList.add("user-info", "text-black", "items-end");
+    const userName = document.createElement("h3");
+    userName.classList.add("text-lg");
+    userName.textContent = player.user.username;
+    const userScore = document.createElement("p");
+    userScore.classList.add("text-base");
+    userScore.textContent = player.score.toFixed(2);
+    userInfo.appendChild(userName);
+    userInfo.appendChild(userScore);
+    info.appendChild(userInfo);
+    userResult.appendChild(info);
+    document.querySelector("#ranking-container").appendChild(userResult);
+
+    document.querySelector("#halt").classList.remove("hidden");
+  });
+  console.log(playerList);
+};
+
+export const renderStartButton = (playerCount, roomId) => {
+  if (playerCount >= 2) {
+    document.querySelector("#start-game-button").disabled = false;
+    document.querySelector("#start-game-button").style.cursor = "pointer";
+  } else {
+    document.querySelector("#start-game-button").disabled = true;
+    document.querySelector("#start-game-button").style.cursor = "not-allowed";
   }
 };

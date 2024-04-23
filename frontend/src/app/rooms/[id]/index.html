@@ -6,12 +6,19 @@
     <title>Gatuk</title>
     <link rel="stylesheet" href="/css/gatuk.css" />
     <link rel="stylesheet" href="/css/stylesheets.css" />
-    <!-- <link rel="stylesheet" href="style.css" /> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
   </head>
 
-  <body class="bg-gatuk min-h-screen flex flex-col justify-center items-center">
-    <div class="home-container rounded-2xl shadow-lg py-8 px-12 space-y-16">
+  <body
+    class="bg-gatuk min-h-screen flex flex-col justify-center items-center py-12"
+  >
+    <div
+      id="halt"
+      class="fixed w-screen bg-black/25 min-h-screen z-10 top-0 right-0 hidden"
+    ></div>
+    <div
+      class="home-container rounded-2xl shadow-lg p-4 md:py-8 md:px-12 space-y-6 md:space-y-8"
+    >
       <div class="flex flex-col justify-center items-center">
         <img src="/assets/gartuk.png" class="h-12" alt="" />
       </div>
@@ -30,13 +37,9 @@
         </div>
 
         <div
-          id="draw-word-container"
-          class="gatuk-heading-subtitle text-white text-center text-4xl bg-black/25 rounded-full"
+          id="game-frame-container"
+          class="flex flex-col lg:grid grid-cols-3 gap-8"
         >
-          <span id="draw-word"></span>
-        </div>
-
-        <div class="grid grid-cols-3 gap-8">
           <div
             class="items-center col-span-2 text-white shadow-lg p-2 bg-white rounded-lg"
           >
@@ -49,7 +52,11 @@
             class="rounded-lg text-white space-y-8 p-4 pb-8 gatuk-border-how-to-play shadow-lg"
           >
             <h2 class="gatuk-heading-subtitle text-2xl text-center">Users</h2>
-            <div id="users-container" class="space-y-2">
+            <div
+              id="users-container"
+              class="space-y-2 overflow-y-auto"
+              style="height: 40vh"
+            >
               <!-- Sample-user -->
               <!-- <div
                 class="flex flex-row items-center gap-8 bg-white/25 rounded-2xl p-2"
@@ -71,25 +78,79 @@
           </div>
         </div>
         <div>
-          <form
-            id="submit-word-form"
-            class="p-4 flex items-center justify-end space-x-8 bg-black/25 rounded-3xl"
+          <div
+            id="draw-word-container"
+            class="gatuk-heading-subtitle text-center text-4xl bg-black/25 rounded-full"
           >
+            <span id="draw-word"></span>
+          </div>
+          <div
+            id="guessed-word-container"
+            class="p-4 bg-black/25 rounded-3xl"
+            style="display: none"
+          >
+            <div
+              id="guessed-word"
+              class="text-center gatuk-heading-subtitle text-white text-2xl"
+            ></div>
+          </div>
+          <form id="submit-word-form" class="p-4 bg-black/25 rounded-3xl">
             <input
               type="text"
               id="input-word"
-              class="gatuk-input-form p-2 rounded-2xl w-full text-center text-yellow"
+              class="gatuk-input-form p-2 rounded-2xl w-full text-center text-yellow mx-0"
               placeholder="input your guess here!"
             />
           </form>
-          <div
-            id="waiting-container"
-            class="gatuk-heading-subtitle text-4xl text-center"
-          >
-            Waiting...
+          <div id="waiting-container">
+            <div class="flex flex-row gap-4 justify-center items-center">
+              <div class="gatuk-heading-subtitle text-4xl text-center">
+                Waiting...
+              </div>
+              <button
+                id="start-game-button"
+                class="gatuk-button-form px-4 py-1 rounded-lg"
+                style="cursor: not-allowed"
+                disabled
+              >
+                start game
+              </button>
+            </div>
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- TODO: Aungpao - Add gameover modal -->
+    <div
+      id="gameover-modal"
+      class="fixed top-1/2 left-1/2 bg-white p-8 rounded-2xl flex flex-col justify-center shadow-lg z-50"
+      style="transform: translateX(-50%, -50%); display: none"
+    >
+      <div class="gatuk-heading-subtitle text-4xl text-center">Game end!</div>
+      <div
+        id="player-score-summary"
+        class="grid grid-cols-1 gap-4 items-center"
+      >
+        <div
+          id="ranking-container"
+          class="grid grid-cols-1 gap-4 items-center"
+        ></div>
+        <button
+          id="quit-gameover"
+          class="gatuk-button-form bg-yellow-400 rounded-2xl p-2"
+        >
+          Back to main menu
+        </button>
+      </div>
+    </div>
+
+    <div
+      id="start-newround-modal"
+      class="fixed top-1/2 left-1/2 bg-black/25 py-4 px-8 rounded-2xl shadow-lg"
+      style="transform: translateX(-50%, -50%); display: none"
+    >
+      <div class="gatuk-heading-subtitle text-4xl">Starting New Round...</div>
     </div>
 
     <script type="module" src="/scripts/pages/rooms/[id]/index.js"></script>

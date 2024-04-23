@@ -46,7 +46,7 @@ export const quitRoom = async (roomId, userId) => {
 };
 
 export const createRoom = async (roomName) => {
-  const response = await fetch("http://localhost:3000/room", {
+  const response = await fetch(`${BACKEND_URL}/room`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -56,9 +56,23 @@ export const createRoom = async (roomName) => {
   return response.json();
 };
 
-export const getRoomStatus = async (roomId) => {
-  const response = await fetch(`${BACKEND_URL}/room/${roomId}/status`, {
-    method: "GET",
+export const guessWord = async (roomId, userId, answer) => {
+  const response = await fetch(`${BACKEND_URL}/room/${roomId}/guess`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      userId,
+      answer,
+    }),
+  });
+  return response.json();
+};
+
+export const startGame = async (roomId) => {
+  const response = await fetch(`${BACKEND_URL}/room/${roomId}/play`, {
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
