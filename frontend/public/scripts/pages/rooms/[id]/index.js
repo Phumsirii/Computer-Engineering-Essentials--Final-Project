@@ -15,6 +15,7 @@ initializeGame(roomId);
 renderRoomStatus("waiting");
 
 // Event listeners
+document.querySelector("html").style.height = null;
 document.querySelector("#quit-room").addEventListener("click", async (e) => {
   e.preventDefault();
   await handleQuitRoom(roomId);
