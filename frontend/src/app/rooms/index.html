@@ -62,6 +62,25 @@
         </button>
       </div>
     </div>
+
+    <div
+      id="get-word-modal"
+      style="width: 350px"
+      class="z-50 fixed hidden p-8 bg-white shadow rounded-2xl gap-4"
+    >
+      <div class="flex justify-between mb-2">
+        <p class="gatuk-heading-subtitle">Word list</p>
+        <button
+          id="get-word-modal-close"
+          class="w-6 h-6 rounded-full bg-red-600 hover:bg-red-200 border-2"
+        ></button>
+      </div>
+      <div
+        id="get-word-container"
+        style="height: 450px"
+        class="grid grid-cols-1 overflow-y-scroll"
+      ></div>
+    </div>
     <div
       id="halt"
       class="fixed w-screen bg-black/25 min-h-screen z-10 top-0 right-0 hidden"
@@ -111,16 +130,24 @@
               <div class="flex flex-row justify-between">
                 <button
                   id="create-room-modal-open"
-                  class="gatuk-button-form rounded-lg px-12 py-1 font-semibold text-lg"
+                  class="gatuk-button-form rounded-lg px-10 py-1 font-semibold text-lg"
                 >
                   create room
                 </button>
-                <button
-                  id="create-word-modal-open"
-                  class="gatuk-button-form rounded-lg px-12 py-1 font-semibold text-lg"
-                >
-                  create new word
-                </button>
+                <div>
+                  <button
+                    id="create-word-modal-open"
+                    class="gatuk-button-form rounded-lg px-6 py-1 font-semibold text-lg mr-4"
+                  >
+                    create new word
+                  </button>
+                  <button
+                    id="view-word-modal-open"
+                    class="gatuk-button-form rounded-lg px-6 py-1 font-semibold text-lg"
+                  >
+                    view all words
+                  </button>
+                </div>
               </div>
             </div>
           </div>
