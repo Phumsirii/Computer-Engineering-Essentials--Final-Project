@@ -135,6 +135,20 @@ export const initializeGame = (roomId) => {
       case "status":
         const playerList = streamData.data.playerList;
         displayPlayersInRoom(playerList);
+        setTimeout(() => {
+          displayPlayersInRoom([...playerList, ...playerList]);
+        }, 2000);
+        setTimeout(() => {
+          displayPlayersInRoom([...playerList, ...playerList, ...playerList]);
+        }, 4000);
+        setTimeout(() => {
+          displayPlayersInRoom([
+            ...playerList,
+            ...playerList,
+            ...playerList,
+            ...playerList,
+          ]);
+        }, 6000);
 
         // Word Management
         const rounds = streamData.data.rounds;
