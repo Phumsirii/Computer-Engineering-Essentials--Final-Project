@@ -8,7 +8,6 @@ import {
   renderGuessedWord,
   renderStartButton,
 } from "../eventListeners/handleRoom.js";
-import { roomId } from "../pages/rooms/[id]/index.js";
 import { getProfile } from "../api/authentication.js";
 
 export let roomInfo = {};
