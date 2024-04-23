@@ -183,7 +183,7 @@ export const initializeGame = (roomId) => {
 
         break;
       case "draw":
-        newDrawing = streamData.data;
+        newDrawing = [...newDrawing, ...streamData.data];
         break;
       case "clear":
         clearCanvas = true;
