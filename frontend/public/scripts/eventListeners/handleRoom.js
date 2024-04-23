@@ -88,7 +88,8 @@ export const displayRooms = async () => {
     const roomInfo = document.createElement("div");
     roomInfo.classList.add(
       "flex",
-      "flex-row",
+      "flex-col",
+      "lg:flex-row",
       "items-center",
       "bg-gatuk",
       "justify-between",
@@ -99,8 +100,10 @@ export const displayRooms = async () => {
     const roomInfoDetails = document.createElement("div");
     roomInfoDetails.classList.add(
       "room-info",
-      "items-end",
-      "gatuk-heading-subtitle"
+      "lg:items-end",
+      "gatuk-heading-subtitle",
+      "text-center",
+      "lg:text-left"
     );
 
     const roomName = document.createElement("h3");
@@ -124,11 +127,17 @@ export const displayRooms = async () => {
     joinButton.classList.add(
       "gatuk-button-form",
       "rounded-lg",
-      "px-12",
+      "px-2",
+      "lg:px-12",
       "py-1",
       "font-semibold",
       "text-lg"
     );
+    if (room.status === "playing" || room.status === "gameover") {
+      roomInfo.classList.add("opacity-50");
+      joinButton.classList.add("cursor-not-allowed", "hidden");
+    }
+
     joinButton.textContent = "join";
     joinButton.onclick = async () => {
       console.log(`Joining room ${room._id}`);
@@ -249,6 +258,56 @@ export const renderGuessedWord = (isGuess, word) => {
 
 export const renderPlayerScoreSummary = (playerList) => {
   // TODO: Aungpao add the player score summary here at gameover modal
+  document.querySelector("#ranking-container").innerHTML = "";
+  playerList.forEach((player) => {
+    const userResult = document.createElement("div");
+    userResult.classList.add(
+      "flex",
+      "flex-row",
+      "justify-between",
+      "items-center",
+      "bg-blue-200",
+      "rounded-2xl",
+      "p-2"
+    );
+    const info = document.createElement("div");
+    info.classList.add(
+      "flex",
+      "flex-row",
+      "items-center",
+      "gap-8",
+      "bg-white/25",
+      "rounded-2xl",
+      "p-2"
+    );
+    const profile = document.createElement("img");
+    profile.src = "/assets/Ricardo_Milos.jpg";
+    profile.classList.add(
+      "w-16",
+      "h-16",
+      "aspect-square",
+      "object-cover",
+      "rounded-full",
+      "border-4",
+      "border-gatuk"
+    );
+    info.appendChild(profile);
+    const userInfo = document.createElement("div");
+    userInfo.classList.add("user-info", "text-black", "items-end");
+    const userName = document.createElement("h3");
+    userName.classList.add("text-lg");
+    userName.textContent = player.user.username;
+    const userScore = document.createElement("p");
+    userScore.classList.add("text-base");
+    userScore.textContent = player.score.toFixed(2);
+    userInfo.appendChild(userName);
+    userInfo.appendChild(userScore);
+    info.appendChild(userInfo);
+    userResult.appendChild(info);
+    document.querySelector("#ranking-container").appendChild(userResult);
+
+    document.querySelector("#halt").classList.remove("hidden");
+  });
   console.log(playerList);
 };
 
