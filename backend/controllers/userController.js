@@ -1,4 +1,5 @@
 const User = require("../models/userModel");
+const crypto = require("crypto");
 
 // desc     Get all Users
 // route    GET /api/v1/users
@@ -7,9 +8,7 @@ exports.getAllUsers = async (req, res, next) => {
   try {
     const users = await User.find();
 
-    res
-      .status(200)
-      .json({ success: true, count: users.length, data: users });
+    res.status(200).json({ success: true, count: users.length, data: users });
   } catch (err) {
     console.log(err);
     res.status(400).json({ success: false, msg: "Can't find users" });
@@ -32,7 +31,7 @@ exports.getUser = async (req, res, next) => {
   } catch (err) {
     console.log(err);
     res.status(400).json({
-      success: false
+      success: false,
     });
   }
 };
@@ -42,8 +41,12 @@ exports.getUser = async (req, res, next) => {
 // access   Private
 exports.createUser = async (req, res, next) => {
   // console.log(req);
+  const { username, password } = req.body;
 
-  const user = await User.create(req.body);
+  const user = await User.create({
+    username,
+    password: hashPassword,
+  });
 
   res.status(201).json({ success: true, data: user });
 };

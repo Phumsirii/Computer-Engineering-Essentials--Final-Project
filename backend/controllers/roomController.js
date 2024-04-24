@@ -141,6 +141,14 @@ const guessDraw = async (req, res) => {
     roomInfo.playerList[guesserIndex].score += 100;
   }
 
+  // Check if user already guessed
+  if (
+    currentRound.guesses.filter((guess) => guess.player.toString() == userId)
+      .length > 0
+  ) {
+    return res.status(400).json({ success: false, msg: "Already guessed" });
+  }
+
   // Add to guesses
   currentRound.guesses.push({ player: userId, guess: answer });
 
@@ -150,6 +158,7 @@ const guessDraw = async (req, res) => {
     // game will over when roundes.length == playerList.length
     if (roomInfo.rounds.length == roomInfo.playerList.length) {
       roomInfo.status = "gameover";
+      currentRound.status = "ended";
       await roomInfo.save();
 
       const maxscore = Math.max(
